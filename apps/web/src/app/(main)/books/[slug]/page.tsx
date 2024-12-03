@@ -119,7 +119,7 @@ export default async function BookPage({ params }: Props) {
 
             {book.bookChapters?.length > 0 ? (
               <div className="space-y-6">
-                {book.bookChapters.map((chapter) => (
+                {book.bookChapters.map((chapter: any) => (
                   <div key={chapter.id} className="space-y-2">
                     <div>
                       <div className="text-lg font-bold">{chapter.title}</div>
@@ -127,7 +127,7 @@ export default async function BookPage({ params }: Props) {
                     <div className="">
                       {chapter.bookSections?.length > 0 && (
                         <div className="space-y-4">
-                          {chapter.bookSections.map((section) => (
+                          {chapter.bookSections.map((section: any) => (
                             <div
                               key={section.id}
                               className="p-2 md:p-4 border rounded-md space-y-4"
