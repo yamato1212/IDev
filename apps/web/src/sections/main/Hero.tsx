@@ -1,8 +1,9 @@
-import Marquee from "@/components/ui/marquee";
 
-import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { db } from "@repo/database";
+import { db } from "@/lib/prisma";
+import { cn } from "@/lib/utils";
+import Marquee from "@/components/Marquee";
+
 const ReviewCard = ({
   id,
   title,
@@ -39,7 +40,7 @@ export async function MarqueeDemo() {
   return (
     <div className="relative flex w-full flex-col items-center justify-center overflow-hidden rounded-lg  bg-background ">
       <Marquee pauseOnHover className="[--duration:40s]">
-        {books.map((book: any) => (
+        {books.map((book) => (
           <ReviewCard key={book.id} {...book} />
         ))}
       </Marquee>
