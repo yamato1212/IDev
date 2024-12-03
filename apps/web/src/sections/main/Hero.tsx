@@ -39,7 +39,7 @@ export async function MarqueeDemo() {
   return (
     <div className="relative flex w-full flex-col items-center justify-center overflow-hidden rounded-lg  bg-background ">
       <Marquee pauseOnHover className="[--duration:40s]">
-        {books.map((book) => (
+        {books.map((book: any) => (
           <ReviewCard key={book.id} {...book} />
         ))}
       </Marquee>
