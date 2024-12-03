@@ -197,7 +197,7 @@ export default async function BookPage({ params }: Props) {
           <div className="mt-8">
             <div className="text-xl font-semibold mb-4">関連コンテンツ</div>
             <div className="space-y-4">
-              {book.children.map((child) => (
+              {book.children.map((child: any) => (
                 <a
                   key={child.id}
                   href={`/books/${child.slug}`}
