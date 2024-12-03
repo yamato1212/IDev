@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+     "build": "prisma generate && next build",
     "start": "next start",
     "fmt": "pnpm biome format ./src --write && pnpm biome check ./src --apply ",
     "type-check": "tsc --noEmit"
