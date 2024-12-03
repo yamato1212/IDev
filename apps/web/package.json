@@ -5,9 +5,6 @@
   "scripts": {
     "dev": "next dev",
      "build": "next build",
-     "prisma:generate": "prisma generate --schema=../../packages/database/prisma/schema.prisma",
-     "postinstall": "prisma generate --schema=../../packages/database/schema.prisma",
-
     "start": "next start",
     "fmt": "pnpm biome format ./src --write && pnpm biome check ./src --apply ",
     "type-check": "tsc --noEmit"
