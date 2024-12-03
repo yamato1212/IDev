@@ -95,7 +95,7 @@ export default async function Home() {
         <div className="space-y-4">
           <div className="text-lg font-bold pb-8">Best Books</div>
           <div className="flex gap-4 overflow-x-scroll pb-2 ">
-            {books.map((item) => (
+            {books.map((item: any) => (
               <Link
                 href={`/book/${item.id}`}
                 className="flex h-52 flex-col items-center justify-between border px-4 py-2"
@@ -135,7 +135,7 @@ export default async function Home() {
           </div>
 
           <CarouselContent>
-            {books?.map((book, index) => (
+            {books?.map((book: any) => (
               <CarouselItem key={book.id} className="md:basis-1/2 lg:basis-1/3">
                 <Link href={`/books/${book.slug}`}>
                   <Card className="flex flex-col p-2">
@@ -190,8 +190,8 @@ export default async function Home() {
         </Carousel>
        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {books?.map((book, index) => (
-            <Link href={`/books/${book.slug}`} key={index}>
+          {books?.map((book: any) => (
+            <Link href={`/books/${book.slug}`} key={book.id}>
               <Card className="flex gap-4 p-2">
                 <div className="bg-gray-50 rounded-xl  py-4 px-8">
                   <div className="z-1 mb-2 flex relative bg-white">
