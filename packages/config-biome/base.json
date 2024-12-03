@@ -1,0 +1,48 @@
+{
+  "$schema": "https://biomejs.dev/schemas/1.5.3/schema.json",
+  "organizeImports": {
+    "enabled": true
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "a11y": {
+        "noSvgWithoutTitle": "off"
+      },
+      "correctness": {
+        "useExhaustiveDependencies": "off"
+      },
+      "security": {
+        "noDangerouslySetInnerHtml": "off"
+      },
+      "style": {
+        "useBlockStatements": "error",
+        "noNonNullAssertion": "off"
+      },
+      "performance": {
+        "noDelete": "off"
+      },
+      "suspicious": {
+        "noExplicitAny": "off"
+      },
+      "complexity": {
+        "noForEach": "off"
+      }
+    },
+    "ignore": ["node_modules", ".next", "dist"]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "tab",
+    "lineWidth": 120,
+    "ignore": [
+      "node_modules",
+      ".next",
+      "dist",
+      ".nuxt",
+      ".wrangler",
+      ".react-email"
+    ]
+  }
+}
