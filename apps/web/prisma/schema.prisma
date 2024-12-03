@@ -1,0 +1,370 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider     = "postgresql"
+   url       = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String  @map("user_id")
+  type               String
+  provider           String
+  providerAccountId  String  @map("provider_account_id")
+  refresh_token      String? @db.Text
+  access_token       String? @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String? @db.Text
+  session_state      String?
+ 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+ 
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  @@map("sessions")
+}
+ 
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+ 
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+model User {
+  id            String    @id @default(uuid())
+  name          String
+  email         String?   @unique
+  image         String?
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  emailVerified DateTime? @map("email_verified")
+
+ 
+
+  accounts      Account[]
+  sessions      Session[]
+  likes         Like[]
+  bookmarks     Bookmark[]
+  bookItems     BookItem[]
+  members       Member[]
+  
+
+  UserProgress UserProgress[]
+
+  @@map("users")
+}
+
+enum CategoryType {
+  FRONTEND     // フロントエンド開発
+  BACKEND      // バックエンド開発
+  DATABASE     // データベース
+  PROGRAMMING  // プログラミング言語
+  AI           // AI/機械学習
+  MOBILE       // モバイル開発
+  DEVOPS       // DevOps
+  SECURITY     // セキュリティ
+  CLOUD        // クラウド
+}
+
+// BOOK STRUCTURE
+model Book {
+  id            String    @id @default(uuid())
+  title         String
+  slug          String    @unique
+  color         String?
+  description   String    @db.Text
+  icon          String
+  documentUrl String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+
+  category      CategoryType?  // メインカテゴリー
+  subCategories CategoryType[] @default([])  // サブカテゴリー
+
+// 階層構造 - NoAction を Restrict に変更
+  parentId      String?
+  parent        Book?     @relation("BookHierarchy", fields: [parentId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  children      Book[]    @relation("BookHierarchy")
+  level         Int       @default(0)
+  order         Int       @default(0)
+
+  // Relations
+  bookChapters  BookChapter[]
+  bookSections  BookSection[]
+  members       Member[]
+  UserProgress  UserProgress[]
+
+
+  prerequisites String[]  @default([])
+
+  bookBestPractices  BookBestPractice[]
+
+  // Indexing slug for faster searches
+  @@index([slug])
+  @@index([parentId])
+}
+
+
+
+
+
+enum ContentType {
+  LINK
+  IMAGE
+  TEXT
+}
+model BookBestPractice {
+  id        String  @id @default(uuid())
+  title     String
+  icon      String?
+  description      String
+  contentType  ContentType @default(TEXT)
+
+  book      Book    @relation(fields: [bookId], references: [id])
+  bookId    String
+
+  bookBestPracticeItems BookBestPracticeItem[]
+
+  @@index([bookId])
+}
+
+
+
+model BookBestPracticeItem {
+ id        String  @id @default(uuid())
+ title String?
+ description String?
+ link      String? 
+ imageUrl  String?
+ text      String?
+ contentType  ContentType @default(TEXT)
+
+ bookBestPracticeId    String
+ bookBestPractice      BookBestPractice    @relation(fields: [bookBestPracticeId], references: [id], onDelete: Cascade)
+
+ @@index([bookBestPracticeId])
+}
+
+
+model BookChapter {
+  id            String @id @default(uuid())
+  title         String
+  description   String @db.Text
+  slug          String @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  bookId        String
+  book          Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  bookSections  BookSection[]
+
+  @@index([bookId])
+}
+
+// コード例の種類を定義
+enum CodeExampleType {
+  BASIC           // 基本例
+  ADVANCED        // 応用例
+  SOLUTION        // 解答例
+  REFACTORED      // リファクタリング例
+  ERROR_CASE      // エラーケース
+  BEST_PRACTICE   // ベストプラクティス
+}
+
+model CodeExample {
+  id            String          @id @default(uuid())
+  title         String         // 例: "基本的な使い方", "実践的な実装例"
+  description   String?   @db.Text      // 例の説明
+  code          String         @db.Text
+  type          CodeExampleType
+  
+  sectionId     String
+  section       BookSection    @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([sectionId])
+  @@index([type])
+}
+
+model BookSection {
+  id            String @id @default(uuid())
+  title         String
+  description   String @db.Text
+  slug          String @unique
+
+  estimatedMinutes Int @default(30)
+  order         Int @default(0)
+  viewCount     Int @default(0)
+  aiContent String? @db.Text
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  codeExamples  CodeExample[]
+  bookChapterId String
+  bookChapter   BookChapter @relation(fields: [bookChapterId], references: [id], onDelete: Cascade)
+  bookItems     BookItem[]
+   bookId        String      // 新しく追加
+  book          Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@index([bookChapterId])
+   @@index([bookId])
+}
+
+
+
+enum BookItemStatus {
+  TODO
+  IN_PROGRESS
+  REVIEW
+  DONE
+}
+
+enum OutputFrequency {
+  DAILY
+  TOMORROW
+  WEEKLY
+  MONTHLY
+}
+
+model BookItem {
+  id            String @id @default(uuid())
+  bookSectionId String
+  authorId      String
+  outputFrequency OutputFrequency
+  nextOutputDate DateTime
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  forkCount     Int @default(0)
+  status        BookItemStatus @default(TODO)
+  public        Boolean @default(false)
+
+  bookSection   BookSection @relation(fields: [bookSectionId], references: [id], onDelete: Cascade)
+  author        User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  outputs       BookItemOutput[]
+  likes         Like[]
+  bookmarks     Bookmark[]
+  
+  originalItemId String?
+  originalItem   BookItem? @relation("Forks", fields: [originalItemId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  forks          BookItem[] @relation("Forks")
+
+ @@unique([bookSectionId, authorId])
+  @@index([bookSectionId])
+  @@index([authorId])
+  @@index([originalItemId])
+}
+
+model BookItemOutput {
+  id            String @id @default(uuid())
+  bookItemId    String
+  content       String @db.Text
+ 
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  bookItem      BookItem @relation(fields: [bookItemId], references: [id], onDelete: Cascade)
+
+
+
+  @@index([bookItemId])
+}
+
+// Like と Bookmark モデルの関連フィールドを更新
+model Like {
+  id              String @id @default(uuid())
+  userId          String
+  bookItemId String
+  user            User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookItem  BookItem@relation(fields: [bookItemId], references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([bookItemId, userId])
+  @@index([bookItemId])
+  @@index([userId])
+}
+
+model Bookmark {
+  id              String @id @default(uuid())
+  userId          String
+  bookItemId String
+  user            User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookItem  BookItem @relation(fields: [bookItemId], references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([userId, bookItemId])
+  @@index([bookItemId])
+}
+
+// 他のモデルは変更なし
+
+enum MemberRole {
+  ADMIN
+  MODERATOR
+  GUEST
+}
+
+model Member {
+  id            String  @id @default(uuid())
+  role          MemberRole @default(GUEST)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  userId        String
+  user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookId        String
+  book          Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([bookId])
+}
+
+
+
+model UserProgress {
+  id            String @id @default(uuid())
+  completionPercentage Int @default(0)
+
+  userId        String
+  user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookId        String
+  book          Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, bookId])
+  @@index([userId])
+  @@index([bookId])
+}

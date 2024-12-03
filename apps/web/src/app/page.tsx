@@ -7,10 +7,11 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { db } from "@/lib/prisma";
 
 import { cn } from "@/lib/utils";
 import { MarqueeDemo } from "@/sections/main/Hero";
-import { db } from "@repo/database";
+
 
 import Image from "next/image";
 import Link from "next/link";

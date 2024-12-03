@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
 // app/books/[slug]/page.tsx
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { db } from "@/lib/prisma";
 import { cn, formatNumber } from "@/lib/utils";
-import { db } from "@repo/database";
+
 import { BookTemplate, Eye, Timer } from "lucide-react";
 import Image from "next/image";
 
