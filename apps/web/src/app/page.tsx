@@ -23,7 +23,7 @@ export default async function Home() {
          <section className="mb-12 flex flex-col gap-8 md:flex-row container justify-between items-center mx-auto">
         <div className="max-w-[600px]  flex flex-col gap-4">
           <h1 className="text-3xl md:text-5xl font-bold mb-4">
-            Explore the World of AI-Generated Technology and Books
+            Explore the World of AI-Generated Technology and Books,
           </h1>
           <p className="text-sm md:text-lg text-gray-600">
             Discover a variety of books and articles that harness the power of
