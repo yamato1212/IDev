@@ -6,6 +6,7 @@ import { cn, formatNumber } from "@/lib/utils";
 
 import { BookTemplate, Eye, Timer } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -22,15 +23,13 @@ export default async function BookPage({ params }: Props) {
 
       bookChapters: {
         include: {
-          bookSections: {
-            include: {
-              codeExamples: true,
-            },
-          },
+          bookSections:  true
         },
       },
     },
   });
+
+
 
 
   if (!book) {
@@ -126,11 +125,11 @@ export default async function BookPage({ params }: Props) {
                     </div>
                     <div className="">
                       {chapter.bookSections?.length > 0 && (
-                        <div className="space-y-4">
+                        <div className="space-y-4 flex flex-col gap-4">
                           {chapter.bookSections.map((section: any) => (
+                            <Link  href={`/books/${s}/${section.slug}`}  key={section.id}>
                             <div
-                              key={section.id}
-                              className="p-2 md:p-4 border rounded-md space-y-4"
+                              className="p-2 md:p-4 border rounded-md "
                             >
                               <div className="flex items-center justify-between gap-4">
                                 <div className="flex items-center gap-4">
@@ -155,10 +154,10 @@ export default async function BookPage({ params }: Props) {
 
                               <div className="flex items-center space-x-4">
                                 <div className="flex gap-2 items-center">
-                                  <Eye className="size-4" />
-                                  <span className="text-sm">
-                                    {formatNumber(section.viewCount)}
-                                  </span>
+
+
+                                   
+
                                 </div>
                                 <div className="flex gap-2 items-center">
                                   <Timer className="size-4" />
@@ -166,16 +165,10 @@ export default async function BookPage({ params }: Props) {
                                     {section.estimatedMinutes} minutes
                                   </span>
                                 </div>
-                                {section.codeExamples.length !== 0 && (
-                                  <div className="flex gap-2 items-center">
-                                    <BookTemplate className="size-4" />
-                                    <span className="text-sx md:text-sm">
-                                      {section.codeExamples.length}
-                                    </span>
-                                  </div>
-                                )}
+                               
                               </div>
                             </div>
+                            </Link>
                           ))}
                         </div>
                       )}
