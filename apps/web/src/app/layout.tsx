@@ -8,6 +8,7 @@ import NextTopLoader from "nextjs-toploader";
 
 import { Inter } from "next/font/google";
 import "../../globals.css";
+import { Header } from "@/layouts/header";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -92,7 +93,7 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-        
+        <Header />
             <div className="h-full">{children}</div>
         
         </ThemeProvider>

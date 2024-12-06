@@ -2,32 +2,35 @@ type IconProps = React.HTMLAttributes<SVGElement>;
 
 export const Icons = {
 	logo: (props: IconProps) => (
-		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" {...props}>
-			<title>svg</title>
-			<rect width="256" height="256" fill="none" />
-			<line
-				x1="208"
-				y1="128"
-				x2="128"
-				y2="208"
-				fill="none"
-				stroke="currentColor"
-				strokeLinecap="round"
-				strokeLinejoin="round"
-				strokeWidth="16"
-			/>
-			<line
-				x1="192"
-				y1="40"
-				x2="40"
-				y2="192"
-				fill="none"
-				stroke="currentColor"
-				strokeLinecap="round"
-				strokeLinejoin="round"
-				strokeWidth="16"
-			/>
-		</svg>
+		<svg
+		width="40"
+		height="40"
+		viewBox="0 0 89 91"
+		fill="none"
+		xmlns="http://www.w3.org/2000/svg"
+		{...props}
+	  >
+		<ellipse
+		  cx="44.5"
+		  cy="45.5"
+		  rx="44.5"
+		  ry="45.5"
+		  fill="url(#paint0_linear_1298_4467)"
+		/>
+		<defs>
+		  <linearGradient
+			id="paint0_linear_1298_4467"
+			x1="44.5"
+			y1="0"
+			x2="44.5"
+			y2="91"
+			gradientUnits="userSpaceOnUse"
+		  >
+			<stop stopColor="#668AF7" />
+			<stop offset="1" stopColor="#1025AE" />
+		  </linearGradient>
+		</defs>
+	  </svg>
 	),
 	twitter: (props: IconProps) => (
 		<svg {...props} height="23" viewBox="0 0 1200 1227" width="23" xmlns="http://www.w3.org/2000/svg">
