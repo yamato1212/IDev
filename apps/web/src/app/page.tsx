@@ -21,7 +21,7 @@ export default async function Home() {
 
   return (
     <div className="pt-20">
-         <section className="mb-12 flex flex-col gap-8 md:flex-row container justify-between items-center mx-auto">
+         <section className="mb-12 flex justify-center flex-col gap-8 items-center mx-auto px-2 text-center">
         <div className="max-w-[600px]  flex flex-col gap-4">
           <h1 className="text-3xl md:text-5xl font-bold mb-4">
             Explore the World of AI-Generated Technology and Books,
@@ -34,59 +34,7 @@ export default async function Home() {
           
         </div>
 
-        <div className="flex  items-end gap-4">
-          <figure
-            className={cn(
-              "relative w-52 h-80 cursor-pointer overflow-hidden rounded-md border p-4",
-              // light styles
-              "border-gray-950/[.1] bg-gray-950/[.01] hover:bg-gray-950/[.05]",
-              // dark styles
-              "dark:border-gray-50/[.1] dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]"
-            )}
-          >
-            <div className="flex flex-col items-center h-full justify-center gap-2">
-              <img width="52" height="52" alt="" src={books[0]?.icon} />
-
-              <figcaption className="text-lg font-bold dark:text-white">
-                {books[0]?.title}
-              </figcaption>
-            </div>
-          </figure>
-          <figure
-            className={cn(
-              "relative w-40 h-[260px] cursor-pointer overflow-hidden rounded-md border p-4",
-              // light styles
-              "border-gray-950/[.1] bg-gray-950/[.01] hover:bg-gray-950/[.05]",
-              // dark styles
-              "dark:border-gray-50/[.1] dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]"
-            )}
-          >
-            <div className="flex flex-col items-center h-full justify-center gap-2">
-              <img width="52" height="52" alt="" src={books[1]?.icon} />
-
-              <figcaption className="text-lg font-bold dark:text-white">
-                {books[1]?.title}
-              </figcaption>
-            </div>
-          </figure>
-          <figure
-            className={cn(
-              "relative w-32 h-48 cursor-pointer overflow-hidden hidden md:flex rounded-md border p-4",
-              // light styles
-              "border-gray-950/[.1] bg-gray-950/[.01] hover:bg-gray-950/[.05]",
-              // dark styles
-              "dark:border-gray-50/[.1] dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]"
-            )}
-          >
-            <div className="flex flex-col items-center h-full justify-center gap-2">
-              <img width="52" height="52" alt="" src={books[2]?.icon} />
-
-              <figcaption className="text-lg font-bold dark:text-white">
-                {books[2]?.title}
-              </figcaption>
-            </div>
-          </figure>
-        </div>
+      
       </section>
 
       <MarqueeDemo />
@@ -97,7 +45,7 @@ export default async function Home() {
           <div className="flex gap-4 overflow-x-scroll pb-2 ">
             {books.map((item: any) => (
               <Link
-                href={`/book/${item.id}`}
+                href={`/book/${item.slug}`}
                 className="flex h-52 flex-col items-center justify-between border px-4 py-2"
                 key={item.id}
                 style={{

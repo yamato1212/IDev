@@ -14,7 +14,7 @@ export async function Header() {
             <div className="mx-auto flex max-w-[1200px]  items-center justify-between rounded-full">
               <div className="gap- flex items-center">
                 <Link href="/" className="flex items-center gap-2">
-                  <Icons.logo className="size-12" />
+                  <Icons.logo className="size-6" />
 
                   <h1 className="text-xl font-semibold">IDev</h1>
                 </Link>

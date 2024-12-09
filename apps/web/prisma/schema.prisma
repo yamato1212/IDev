@@ -113,7 +113,7 @@ model BookChapter {
   slug          String @unique
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-
+  order         Int      @default(0)
   bookId        String
   book          Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
   bookSections  BookSection[]

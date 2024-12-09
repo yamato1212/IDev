@@ -5,6 +5,7 @@ import { db } from "@/lib/prisma";
 import { cn } from "@/lib/utils";
 import { ArrowLeft, Clock, Timer } from "lucide-react";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown"
 
 type Props = {
   params: Promise<{ slug: string; sectionSlug: string }>;
@@ -96,20 +97,31 @@ export default async function BookSectionPage({ params }: Props) {
           </header>
 
           {/* 本文 */}
-          <div className="prose dark:prose-invert max-w-none">
-            <div
-              dangerouslySetInnerHTML={{
-                __html: currentSection.aiContent || "Content coming soon...",
-              }}
-            />
-          </div>
+         
+          <ReactMarkdown className="prose dark:prose-invert max-w-none markdown-content">
+  {currentSection.aiContent}
+</ReactMarkdown>
+         
         </article>
 
         {/* ナビゲーションフッター */}
         <footer className="border-t pt-8 mt-8">
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col md:flex-row-reverse gap-4 w-full justify-between items-center">
+
+          {nextSection && (
+              <Button variant="outline" asChild className="flex items-center gap-2 rounded-xl w-full py-12">
+                <Link href={`/books/${slug}/${nextSection.slug}`}>
+                  <div className="flex flex-col items-center">
+                    <span className="text-xs text-gray-500">Next</span>
+                    <span className="text-sm">{nextSection.title}</span>
+                  </div>
+                  <ArrowLeft className="h-4 w-4 rotate-180" />
+                </Link>
+              </Button>
+            )}
+
             {previousSection ? (
-              <Button variant="outline" asChild className="flex items-center gap-2">
+              <Button variant="outline" asChild className="flex items-center gap-2 w-full rounded-xl">
                 <Link href={`/books/${slug}/${previousSection.slug}`}>
                   <ArrowLeft className="h-4 w-4" />
                   <div className="flex flex-col items-start">
@@ -119,9 +131,9 @@ export default async function BookSectionPage({ params }: Props) {
                 </Link>
               </Button>
             ) : (
-              <Button variant="outline" asChild>
+              <Button variant="outline" className="rounded-xl w-full" asChild>
                 <Link href={`/books/${slug}`}>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 ">
                     <ArrowLeft className="h-4 w-4" />
                     Back to Book
                   </div>
@@ -129,50 +141,11 @@ export default async function BookSectionPage({ params }: Props) {
               </Button>
             )}
 
-            {nextSection && (
-              <Button variant="outline" asChild className="flex items-center gap-2">
-                <Link href={`/books/${slug}/${nextSection.slug}`}>
-                  <div className="flex flex-col items-end">
-                    <span className="text-xs text-gray-500">Next</span>
-                    <span className="text-sm truncate max-w-[200px]">{nextSection.title}</span>
-                  </div>
-                  <ArrowLeft className="h-4 w-4 rotate-180" />
-                </Link>
-              </Button>
-            )}
+          
           </div>
         </footer>
       </div>
 
-      {/* モバイル向けの固定ナビゲーション */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 md:hidden">
-        <div className="flex justify-between max-w-5xl mx-auto">
-          {previousSection ? (
-            <Button variant="ghost" size="sm" asChild>
-              <Link href={`/books/${slug}/${previousSection.slug}`}>
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Previous
-              </Link>
-            </Button>
-          ) : (
-            <Button variant="ghost" size="sm" asChild>
-              <Link href={`/books/${slug}`}>
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Book
-              </Link>
-            </Button>
-          )}
-
-          {nextSection && (
-            <Button variant="ghost" size="sm" asChild>
-              <Link href={`/books/${slug}/${nextSection.slug}`}>
-                Next
-                <ArrowLeft className="h-4 w-4 rotate-180 ml-2" />
-              </Link>
-            </Button>
-          )}
-        </div>
-      </div>
     </div>
   );
 }

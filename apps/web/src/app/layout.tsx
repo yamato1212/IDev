@@ -9,6 +9,9 @@ import NextTopLoader from "nextjs-toploader";
 import { Inter } from "next/font/google";
 import "../../globals.css";
 import { Header } from "@/layouts/header";
+import { Suspense } from "react";
+import GoogleAnalytics from "@/components/GoogleAnalytics/GoogleAnalytics";
+import GoogleAdsense from "@/components/GoogleAdsense/GoogleAdsense";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -72,9 +75,9 @@ export default async function RootLayout({
   return (
     <html lang="jp" suppressHydrationWarning>
       <head>
-        {/* <Suspense>
+        <Suspense>
           <GoogleAnalytics />
-        </Suspense> */}
+        </Suspense>
       </head>
       <body className={cn(inter.className)}>
         <NextTopLoader
@@ -99,7 +102,7 @@ export default async function RootLayout({
         </ThemeProvider>
         <Toaster />
       </body>
-      {/* <GoogleAdsense /> */}
+      <GoogleAdsense />
     </html>
   );
 }

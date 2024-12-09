@@ -107,3 +107,155 @@ input[type="range"] {
     @apply dark:bg-neutral-100 dark:active:bg-white;
   }
 }
+
+.markdown-content p {
+  margin-bottom: 0.75rem;  /* 段落の間隔を4pxに調整 */
+  line-height: 1.6;        /* 行の高さ */
+  color: #333;             /* 文字色 */
+}
+
+
+
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3 {
+  margin-top: 2rem;        /* 見出しの上のスペース */
+  margin-bottom: 1rem;     /* 見出しの下のスペース */
+  color: #444;             /* 見出しの文字色 */
+  font-weight: bold;       /* 太字 */
+}
+
+.markdown-content h1 {
+  font-size: 1.4rem;         /* h1のフォントサイズ */
+}
+
+.markdown-content h2 {
+  font-size: 1.2rem;      /* h2のフォントサイズ */
+}
+
+.markdown-content h3 {
+  font-size: 1.2rem;       /* h3のフォントサイズ */
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  margin-left: 2rem;       /* リスト全体の左マージン */
+  margin-bottom: 1.5rem;   /* リスト全体の下マージン */
+}
+
+.markdown-content li {
+  margin-bottom: 0.75rem;  /* 各リストアイテムの下マージン */
+  font-size: 1.125rem;     /* アイテムのフォントサイズ */
+}
+
+.markdown-content ul {
+  list-style-type: disc;   /* 箇条書きのスタイル */
+}
+
+.markdown-content ol {
+  list-style-type: decimal; /* 番号付きリストのスタイル */
+}
+
+.markdown-content strong {
+  font-weight: bold;
+  color: #2c3e50; /* 強調されたテキストの色 */
+}
+
+.markdown-content em {
+  font-style: italic;
+  color: #7f8c8d; /* 斜体の色 */
+}
+
+.markdown-content a {
+  color: #3498db;            /* リンクの色 */
+  text-decoration: underline; /* 下線を追加 */
+}
+
+.markdown-content a:hover {
+  color: #2980b9;            /* ホバー時のリンク色 */
+  text-decoration: none;     /* ホバー時に下線を削除 */
+}
+
+.markdown-content a {
+  color: #3498db;            /* リンクの色 */
+  text-decoration: underline; /* 下線を追加 */
+}
+
+.markdown-content a:hover {
+  color: #2980b9;            /* ホバー時のリンク色 */
+  text-decoration: none;     /* ホバー時に下線を削除 */
+}
+
+.markdown-content blockquote {
+  border-left: 4px solid #3498db; /* 引用の左に線を追加 */
+  padding-left: 1rem;             /* 引用の左パディング */
+  margin-left: 0;                 /* 引用の左マージン */
+  font-style: italic;             /* 引用を斜体 */
+  color: #7f8c8d;                 /* 引用の文字色 */
+}
+
+.markdown-content img {
+  max-width: 100%;       /* 画像の最大幅を親要素に合わせる */
+  height: auto;          /* 高さを自動で調整 */
+  border-radius: 8px;    /* 画像の角を丸める */
+  margin-bottom: 1.5rem; /* 画像下のスペース */
+}
+
+.markdown-content table {
+  width: 100%;            /* テーブルの幅を100%に */
+  margin-bottom: 1.5rem;  /* テーブル下のスペース */
+  border-collapse: collapse; /* セルの境界を結合 */
+}
+
+.markdown-content th,
+.markdown-content td {
+  padding: 0.75rem;       /* セル内のパディング */
+  border: 1px solid #ddd; /* セルの枠線 */
+}
+
+.markdown-content th {
+  background-color: #f9f9f9; /* ヘッダーの背景色 */
+  font-weight: bold;          /* ヘッダーを太字 */
+}
+
+.markdown-content td {
+  text-align: left;          /* セルの文字位置を左寄せ */
+}
+
+.markdown-content {
+  max-width: 100%;  /* 最大幅を100%に変更 */
+  margin: 0 auto;    /* 自動的に中央寄せ */
+  word-wrap: break-word; /* 長いテキストが親要素を超えないようにする */
+  overflow-wrap: break-word; /* テキストが親要素内で折り返されるように */
+}
+
+.markdown-content a {
+  text-decoration: none; /* リンクの下線を削除 */
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  padding-left: 1.5rem;  /* リストの左パディング */
+}
+
+.markdown-content img {
+  max-width: 100%; /* 画像が親要素を超えないようにする */
+  height: auto;
+  display: block;
+  margin: 0 auto; /* 画像を中央寄せ */
+}
+
+.markdown-content pre {
+  white-space: pre-wrap; /* 長い行を折り返し表示 */
+  word-wrap: break-word; /* 長い単語を折り返し */
+  overflow-x: auto; /* 横スクロールを有効にする */
+  max-width: 100%; /* 最大幅を100%に設定 */
+  padding: 1rem; /* パディングを追加して見やすく */
+}
+
+.markdown-content code {
+  white-space: nowrap; /* コード内で折り返さない */
+  overflow-x: auto; /* 横スクロールを有効にする */
+  display: inline-block; /* インラインブロック表示 */
+}

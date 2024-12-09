@@ -3,6 +3,7 @@ import Image from "next/image";
 import { db } from "@/lib/prisma";
 import { cn } from "@/lib/utils";
 import Marquee from "@/components/Marquee";
+import Link from "next/link";
 
 const ReviewCard = ({
   id,
@@ -16,7 +17,7 @@ const ReviewCard = ({
   icon: string;
 }) => {
   return (
-    <div className="z-1 mb-2 flex relative bg-white">
+    <Link href={`/books/${slug}`} className="z-1 mb-2 flex relative bg-white">
       <div className={cn("w-2 rounded-md border shadow-md ")} />
       <div
         className={cn(
@@ -30,7 +31,7 @@ const ReviewCard = ({
           <Image src={icon} alt={title} width={30} height={30} />
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

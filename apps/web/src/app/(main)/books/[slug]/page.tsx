@@ -5,6 +5,7 @@ import { db } from "@/lib/prisma";
 import { cn, formatNumber } from "@/lib/utils";
 
 import { BookTemplate, Eye, Timer } from "lucide-react";
+import { unstable_cache } from "next/cache";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -12,24 +13,42 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
-export default async function BookPage({ params }: Props) {
-  const s = (await params).slug;
-  const book = await db.book.findFirst({
-    where: {
-      slug: s,
-    },
-    include: {
-      children: true,
-
-      bookChapters: {
-        include: {
-          bookSections:  true
+const getCachedBook = unstable_cache(
+	async (s: string) => {
+    const book = await db.book.findFirst({
+      where: {
+        slug: s,
+      },
+      include: {
+        children: true,
+  
+        bookChapters: {
+          include: {
+            bookSections:  {
+              orderBy: {
+                order:"asc"
+              }
+            }
+          },
+          orderBy: {
+            order: "asc"
+          }
         },
       },
-    },
-  });
+    });
 
+    return book
+	},
+	["shot-detail"],
+	{
+		revalidate: 120,
+		tags: ["shot-detail"],
+	},
+)
 
+export default async function BookPage({ params }: Props) {
+  const s = (await params).slug;
+    const book = await getCachedBook(s);
 
 
   if (!book) {
@@ -46,13 +65,13 @@ export default async function BookPage({ params }: Props) {
     <div className="max-w-6xl mx-auto p-6 pt-20">
       <div className="flex flex-col md:flex-row gap-8 relative min-h-[calc(100vh-theme(spacing.32))]">
         {/* 左側固定部分 */}
-        <div className="md:w-80 md:flex-shrink-0 md:sticky md:top-20 h-fit">
+        <div className="md:w-80 md:flex-shrink-0 md:sticky md:top-20 h-fit flex justify-center items-center">
           <div className="space-y-8">
             <div className="z-1 mb-2 flex relative bg-white">
               <div className={cn("w-2 rounded-md border shadow-md ")} />
               <div
                 className={cn(
-                  "flex  flex-col border py-32 text-center   w-[280px] shadow-md"
+                  "flex  flex-col border py-28 text-center   w-[280px] shadow-md"
                 )}
               >
                 <div className="flex-1">
@@ -112,12 +131,12 @@ export default async function BookPage({ params }: Props) {
         {/* 右側スクロール部分 */}
         <div className="flex-1 min-w-0">
           <div className="space-y-6">
-            <div className="prose dark:prose-invert max-w-none">
+            <div className="prose dark:prose-invert max-w-none text-slate-600 text-sm">
               <p>{book.description}</p>
             </div>
 
             {book.bookChapters?.length > 0 ? (
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {book.bookChapters.map((chapter: any) => (
                   <div key={chapter.id} className="space-y-2">
                     <div>
@@ -125,24 +144,15 @@ export default async function BookPage({ params }: Props) {
                     </div>
                     <div className="">
                       {chapter.bookSections?.length > 0 && (
-                        <div className="space-y-4 flex flex-col gap-4">
+                        <div className="flex flex-col gap-4">
                           {chapter.bookSections.map((section: any) => (
                             <Link  href={`/books/${s}/${section.slug}`}  key={section.id}>
                             <div
                               className="p-2 md:p-4 border rounded-md "
                             >
                               <div className="flex items-center justify-between gap-4">
-                                <div className="flex items-center gap-4">
-                                  <div
-                                    className={cn(
-                                      "w-8 h-8 text-sm text-bold flex justify-center items-center rounded-full text-white"
-                                    )}
-                                    style={{
-                                      backgroundColor: `#${book.color}`,
-                                    }}
-                                  >
-                                    {section.order}
-                                  </div>
+                                <div className="flex items-center gap-4 pb-2">
+                                 
                                   <h3 className="font-semibold">
                                     {section.title}
                                   </h3>
@@ -152,21 +162,7 @@ export default async function BookPage({ params }: Props) {
                                 {section.description}
                               </div>
 
-                              <div className="flex items-center space-x-4">
-                                <div className="flex gap-2 items-center">
-
-
-                                   
-
-                                </div>
-                                <div className="flex gap-2 items-center">
-                                  <Timer className="size-4" />
-                                  <span className="text-sm">
-                                    {section.estimatedMinutes} minutes
-                                  </span>
-                                </div>
-                               
-                              </div>
+                           
                             </div>
                             </Link>
                           ))}
