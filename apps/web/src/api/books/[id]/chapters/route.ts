@@ -40,6 +40,14 @@ export async function GET(
         bookSections: {
           orderBy: {
             order: 'asc'
+          },
+          include: {
+            bookSubSections: {
+              orderBy: {
+                order:"asc" 
+              }
+            },
+          
           }
           
         }

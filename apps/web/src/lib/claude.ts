@@ -19,116 +19,129 @@ function logError(functionName: string, error: any, context?: any) {
 
 
 
+
+
 export async function generateBookStructure(bookTitle: string, description: string) {
   const functionName = 'generateBookStructure';
   try {
     logDebug(functionName, 'Starting generation with:', { bookTitle, description });
 
-    const prompt = `Generate a professional technical book structure in JSON format for a programming guide.
+    const prompt = `Generate a comprehensive book structure in JSON format based on the provided book title and description. The structure should be tailored to the topic and cover all relevant aspects necessary for readers to thoroughly understand the subject. Use the following exact JSON format and return **only valid JSON**:
 
-Book Title: ${bookTitle}
-Description: ${description}
+    bookTItle: ${bookTitle}
+    description: ${description}
 
-Return ONLY the following JSON structure with no additional text:
 {
   "chapters": [
     {
-      "title": "Chapter Title",
-      "description": "Chapter Description",
-      "pageEstimate": 30,
+      "title": "Chapter 1: [Placeholder for Chapter Title]",
+      "description": "Brief description of the chapter's focus",
       "sections": [
         {
           "title": "Section Title",
-          "description": "Section Description",
-          "estimatedMinutes": 30,
+          "description": "Overview of the section's content",
+          "estimatedMinutes": 20,
           "order": 1,
-        
+          "subSections": [
+            {
+              "title": "Subsection Title",
+              "description": "Detailed explanation or practical example",
+              "estimatedMinutes": 10,
+              "order": 1
+            }
+          ]
         }
       ]
     }
   ]
 }
 
-Content Organization Requirements:
+**Input**:
+- Book Title: {{bookTitle}}
+- Description: {{description}}
 
-1. Complete Coverage:
-   - Break down large topics into dedicated chapters
-   - Cover each concept thoroughly with multiple sections
-   - Include all variations and use cases
-   - No artificial limits on content length
+**Guidelines**:
+1. Use the book title and description as context to determine the appropriate topics, chapters, and structure.
+2. Each chapter should focus on a single key theme or concept, broken into logical sections and subsections.
+3. Adapt the complexity of the content to suit the book's purpose (e.g., beginner-friendly for introductory topics, advanced details for expert-level books).
+4. Include practical examples, real-world use cases, or case studies where relevant.
+5. Ensure the book structure progresses logically, covering fundamentals before moving to more advanced topics.
+6. Chapters, sections, and subsections can be added as needed, with no strict limits.
 
-2. Detailed Breakdown:
-   Example for "React Hooks":
-   - Individual chapters for complex topics
-   - Detailed sections for each hook type
-   - All common patterns and use cases
-   - Error handling and edge cases
-   - Integration with other features
+**Important**:
+- Ensure the JSON is valid and well-structured.
+- Output only JSON without any text outside the format.
+- Keep the structure flexible and relevant to the topic based on the title and description provided.
 
-3. Progressive Learning:
-   - Start with foundational knowledge
-   - Build complexity gradually
-   - Include advanced scenarios
-   - Cover production considerations
+Example Titles and Descriptions:
+- "Mastering SwiftUI" with "A book to guide developers through all aspects of SwiftUI development."
+- "Introduction to Machine Learning" with "A comprehensive beginner's guide to machine learning concepts and applications."
+- "Cooking for Beginners" with "A step-by-step guide to mastering basic cooking skills and recipes."
 
-4. Practical Focus:
-   - Real-world examples
-   - Common patterns
-   - Best practices
-   - Anti-patterns to avoid
-   - Debugging and troubleshooting
-   - Performance optimization
-
-5. Content Requirements:
-   - Each concept should be fully explained
-   - Include setup and configuration
-   - Cover testing strategies
-   - Include deployment considerations
-   - Address security concerns
-   - Performance best practices
-
-Technical Requirements:
-- Valid JSON format
-- Detailed descriptions
-- Clear prerequisites
-- Specific learning objectives
-- Logical content progression
-- No external content
-
-Goal: Create a structure for a definitive guide that covers everything a developer needs to know about the subject.`;
-
-    logDebug(functionName, 'Sending prompt to Claude');
+Adjust chapters, sections, and subsections to fit the provided topic while maintaining a logical and educational flow.
+`;
 
     const response = await client.messages.create({
       model: 'claude-3-opus-20240229',
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
-    }) as any;
+      temperature: 0.7,
+    });
 
-    logDebug(functionName, 'Received response from Claude');
-    
     const content = response.content[0].text;
+    
+    // デバッグログ追加
     logDebug(functionName, 'Raw response:', content);
 
-    // JSON部分を抽出
-    const jsonMatch = content.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      throw new Error('No valid JSON found in response');
+    try {
+      // JSON部分の抽出を改善
+      let jsonContent = content;
+      if (content.includes('{')) {
+        const start = content.indexOf('{');
+        const end = content.lastIndexOf('}') + 1;
+        jsonContent = content.slice(start, end);
+      }
+
+      // JSONとしての妥当性をチェック
+      if (!jsonContent.trim().startsWith('{') || !jsonContent.trim().endsWith('}')) {
+        throw new Error('Invalid JSON structure');
+      }
+
+      const parsedContent = JSON.parse(jsonContent);
+
+      // 構造の検証
+      if (!parsedContent || !parsedContent.chapters || !Array.isArray(parsedContent.chapters)) {
+        throw new Error('Invalid book structure: missing chapters array');
+      }
+
+      // すべての必要なプロパティが存在することを確認
+      parsedContent.chapters.forEach((chapter: any, i: number) => {
+        if (!chapter.title || !chapter.description || !Array.isArray(chapter.sections)) {
+          throw new Error(`Invalid chapter structure at index ${i}`);
+        }
+
+        chapter.sections.forEach((section: any, j: number) => {
+          if (!section.title || !section.description || !Array.isArray(section.subSections)) {
+            throw new Error(`Invalid section structure at chapter ${i}, section ${j}`);
+          }
+        });
+      });
+
+      return parsedContent;
+
+    } catch (parseError) {
+      logError(functionName, 'JSON parse error:', {
+        error: parseError,
+        content: content
+      });
+      throw parseError;
     }
 
-    const jsonContent = jsonMatch[0];
-    logDebug(functionName, 'Extracted JSON:', jsonContent);
-
-    const parsedContent = JSON.parse(jsonContent);
-    logDebug(functionName, 'Successfully parsed JSON');
-
-    return parsedContent;
   } catch (error) {
     logError(functionName, error, { bookTitle, description });
     throw error;
   }
 }
-
 export async function generateSectionStructure(
   bookTitle: string,
   chapterTitle: string,
@@ -162,6 +175,7 @@ Example format:
     "type": "concept|tutorial|practice|reference"
   }
 ]
+
 
 Requirements:
 - Cover all necessary topics for this chapter

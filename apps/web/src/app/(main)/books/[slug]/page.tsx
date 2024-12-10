@@ -1,3 +1,4 @@
+import BookChapters from "@/components/main/book/BookChapters";
 import { Button } from "@/components/ui/button";
 // app/books/[slug]/page.tsx
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,6 +28,13 @@ const getCachedBook = unstable_cache(
             bookSections:  {
               orderBy: {
                 order:"asc"
+              },
+              include: {
+                bookSubSections: {
+                  orderBy: {
+                    order:"asc"
+                  }
+                }
               }
             }
           },
@@ -129,56 +137,7 @@ export default async function BookPage({ params }: Props) {
         </div>
 
         {/* 右側スクロール部分 */}
-        <div className="flex-1 min-w-0">
-          <div className="space-y-6">
-            <div className="prose dark:prose-invert max-w-none text-slate-600 text-sm">
-              <p>{book.description}</p>
-            </div>
-
-            {book.bookChapters?.length > 0 ? (
-              <div className="space-y-4">
-                {book.bookChapters.map((chapter: any) => (
-                  <div key={chapter.id} className="space-y-2">
-                    <div>
-                      <div className="text-lg font-bold">{chapter.title}</div>
-                    </div>
-                    <div className="">
-                      {chapter.bookSections?.length > 0 && (
-                        <div className="flex flex-col gap-4">
-                          {chapter.bookSections.map((section: any) => (
-                            <Link  href={`/books/${s}/${section.slug}`}  key={section.id}>
-                            <div
-                              className="p-2 md:p-4 border rounded-md "
-                            >
-                              <div className="flex items-center justify-between gap-4">
-                                <div className="flex items-center gap-4 pb-2">
-                                 
-                                  <h3 className="font-semibold">
-                                    {section.title}
-                                  </h3>
-                                </div>
-                              </div>
-                              <div className="text-gray-600 dark:text-gray-400 text-xs md:text-sm line-clamp-4">
-                                {section.description}
-                              </div>
-
-                           
-                            </div>
-                            </Link>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center text-gray-600 dark:text-gray-400">
-                no chapter yet
-              </div>
-            )}
-          </div>
-        </div>
+     <BookChapters book={book} slug={s}/>
       </div>
 
       <div>

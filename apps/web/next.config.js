@@ -17,6 +17,11 @@ const nextConfig = {
       },
       {
         protocol: "https",
+        hostname: "swiftwithmajid.com",
+        port: "",
+      },
+      {
+        protocol: "https",
         hostname: "www.youtube.com",
         port: "",
       },

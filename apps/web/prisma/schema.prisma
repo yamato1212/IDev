@@ -142,8 +142,31 @@ model BookSection {
    bookId        String      // 新しく追加
   book          Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
 
+  bookSubSections BookSubSection[]
+
   @@index([bookChapterId])
    @@index([bookId])
 }
+
+model BookSubSection {
+  id            String @id @default(uuid())
+  title         String
+  description   String @db.Text
+  slug          String @unique
+
+  estimatedMinutes Int @default(30)
+  order         Int @default(0)
+  aiContent String? @db.Text
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+ 
+  bookSectionId String
+  BookSection   BookSection @relation(fields: [bookSectionId], references: [id], onDelete: Cascade)
+
+  @@index([bookSectionId])
+}
+
 
 

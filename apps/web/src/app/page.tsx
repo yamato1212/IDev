@@ -45,7 +45,7 @@ export default async function Home() {
           <div className="flex gap-4 overflow-x-scroll pb-2 ">
             {books.map((item: any) => (
               <Link
-                href={`/book/${item.slug}`}
+                href={`/books/${item.slug}`}
                 className="flex h-52 flex-col items-center justify-between border px-4 py-2"
                 key={item.id}
                 style={{

@@ -27,6 +27,22 @@ type Section = {
   bookId: string;
   createdAt: string;
   updatedAt: string;
+
+  bookSubSections: SubSection[];
+};
+
+type SubSection = {
+  id: string;
+  title: string;
+  description: string;
+  slug: string;
+  estimatedMinutes: number;
+  order: number;
+  aiContent: string | null;
+  bookChapterId: string;
+  bookId: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export default function GenerateBookContent({ params }: { params: { id: string } }) {
@@ -35,7 +51,9 @@ export default function GenerateBookContent({ params }: { params: { id: string }
   const [progress, setProgress] = useState(0);
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [expandedChapters, setExpandedChapters] = useState<{[key: string]: boolean}>({});
+  const [expandedSections, setExpandedSections] = useState<{[key: string]: boolean}>({});
   const [generatingContent, setGeneratingContent] = useState<{[key: string]: boolean}>({});
+
 
   const fetchChapters = async () => {
     try {
@@ -119,6 +137,15 @@ export default function GenerateBookContent({ params }: { params: { id: string }
     }));
   };
 
+  const toggleSection = (sectionId: string) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [sectionId]: !prev[sectionId]
+    }));
+  };
+
+  console.log(chapters)
+
   return (
     <div className="max-w-4xl mx-auto p-20">
       <h1 className="text-2xl font-bold mb-4">本のコンテンツを生成</h1>
@@ -171,19 +198,22 @@ export default function GenerateBookContent({ params }: { params: { id: string }
             {expandedChapters[chapter.id] && chapter.bookSections?.length > 0 && (
               <div className="ml-7 mt-4 space-y-3">
                 {chapter.bookSections.map((section) => (
-                  <div 
-                    key={section.id}
-                    className="border-l-2 border-gray-200 pl-4 py-2"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="font-medium text-sm">{section.title}</h4>
-                        <p className="text-sm text-gray-600">{section.description}</p>
-                        <span className="text-xs text-gray-500">
-                          予想読了時間: {section.estimatedMinutes}分
-                        </span>
-                      </div>
-                      <Button
+                  <>
+                    <div 
+              className="flex items-center cursor-pointer"
+              onClick={() => toggleSection(section.id)}
+            >
+              {expandedSections[section.id] ? 
+                <ChevronDown className="w-5 h-5 mr-2" /> : 
+                <ChevronRight className="w-5 h-5 mr-2" />
+              }
+              <div className="flex justify-between w-full items-center">
+                 <div>
+
+                <h3 className="font-medium">{section.title}</h3>
+                <p className="text-sm text-gray-600">{section.description}</p>
+                 </div>
+                <Button
                         onClick={() => handleGenerateContent(section.id)}
                         disabled={generatingContent[section.id]}
                         variant="outline"
@@ -195,15 +225,38 @@ export default function GenerateBookContent({ params }: { params: { id: string }
                           section.aiContent ? 'コンテンツを再生成' : 'コンテンツを生成'
                         )}
                       </Button>
+              </div>
+            </div>
+
+            {expandedSections[section.id] && section.bookSubSections?.length > 0 && (
+              <div>
+                   {section.bookSubSections.map((sub) =>   <div 
+                    key={sub.id}
+                    className="border-l-2 border-gray-200 pl-4 py-2"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-medium text-sm">{sub.title}</h4>
+                        <p className="text-sm text-gray-600">{sub.description}</p>
+                        <span className="text-xs text-gray-500">
+                          予想読了時間: {sub.estimatedMinutes}分
+                        </span>
+                      </div>
+                   
                     </div>
-                    {section.aiContent && (
+                    {sub.aiContent && (
                       <div className="mt-2 p-2 bg-gray-50 rounded">
                         <p className="text-sm text-gray-600 whitespace-pre-wrap">
                           {section.aiContent}
                         </p>
                       </div>
                     )}
-                  </div>
+                  </div>)}
+              </div>
+            )}
+         
+                
+                  </>
                 ))}
               </div>
             )}
