@@ -16,6 +16,72 @@ import { MarqueeDemo } from "@/sections/main/Hero";
 import Image from "next/image";
 import Link from "next/link";
 
+import { Metadata } from "next";
+
+const siteConfig = {
+  name: "IDev",
+  url: "https://casiry.com",
+  description: "Explore the world of AI-generated technology and books. Discover a variety of books and articles that harness the power of AI to generate unique insights into technology.",
+  ogImage: "/og-image.jpg",
+};
+
+export const metadata: Metadata = {
+  title: "AI Book Hub - Explore AI-Generated Technology Books",
+  description: "Discover a curated collection of AI-generated technology books and articles. Browse our best books and programming language resources to expand your tech knowledge.",
+  keywords: [
+    "AI Books",
+    "Technology Books",
+    "Programming Languages",
+    "AI-Generated Content",
+    "Technical Books",
+    "Programming Resources",
+    "Technology Learning",
+    "AI Education",
+    "Digital Books",
+    "Tech Resources"
+  ],
+  openGraph: {
+    type: "website",
+    locale: "ja_JP",
+    url: siteConfig.url,
+    title: "AI Book Hub - AI-Generated Technology Books Collection",
+    description: "Explore our curated collection of AI-generated technology books. Find programming language resources and tech insights to enhance your knowledge.",
+    siteName: siteConfig.name,
+    images: [
+      {
+        url: siteConfig.ogImage,
+        width: 1200,
+        height: 630,
+        alt: "AI Book Hub - Featured Books Collection",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AI Book Hub - Tech Book Collection",
+    description: "Discover AI-generated technology books and programming resources. Explore our curated collection of tech insights.",
+    images: [siteConfig.ogImage],
+  },
+  alternates: {
+    canonical: siteConfig.url,
+    languages: {
+      'ja-JP': '/',
+      'en-US': '/en',
+    },
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  category: "Technology",
+};
+
 export default async function Home() {
   const books = await db.book.findMany();
 

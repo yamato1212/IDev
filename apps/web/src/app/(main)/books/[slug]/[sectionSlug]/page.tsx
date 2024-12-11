@@ -2,7 +2,131 @@
 import { Button } from "@/components/ui/button";
 import { db } from "@/lib/prisma";
 import { ArrowLeft, Clock } from "lucide-react";
+import { Metadata } from "next";
 import Link from "next/link";
+
+async function getSectionData(bookSlug: string, sectionSlug: string) {
+  const book = await db.book.findFirst({
+    where: { slug: bookSlug },
+    include: {
+      bookChapters: {
+        include: {
+          bookSections: {
+            where: { slug: sectionSlug },
+            include: {
+              bookSubSections: {
+                orderBy: {
+                  order: "asc"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  });
+
+  const section = book?.bookChapters
+    .flatMap(chapter => chapter.bookSections)
+    .find(section => section.slug === sectionSlug);
+
+  return { book, section };
+}
+
+export async function generateMetadata(
+  { params }: { params: { slug: string; sectionSlug: string } }
+): Promise<Metadata> {
+  const { book, section } = await getSectionData(params.slug, params.sectionSlug);
+
+  if (!book || !section) {
+    return {
+      title: "Section Not Found | AI Book Hub",
+      description: "The requested book section could not be found.",
+    };
+  }
+
+  // Calculate total estimated time for the section
+  const totalEstimatedMinutes = section.bookSubSections.reduce(
+    (total, subsection) => total + (subsection.estimatedMinutes || 0),
+    0
+  );
+
+  // Get subsection titles for keywords
+  const subsectionTitles = section.bookSubSections.map(
+    subsection => subsection.title
+  );
+
+  const baseUrl = process.env.NEXT_PUBLIC_URL
+    ? `https://${process.env.NEXT_PUBLIC_URL}`
+    : "http://localhost:3000";
+
+  const fullTitle = `${section.title} - ${book.title}`;
+  
+  return {
+    title: fullTitle,
+    description: `${section.description} Learn about ${subsectionTitles.join(", ")} in this comprehensive guide.`,
+    
+    keywords: [
+      book.title,
+      section.title,
+      ...subsectionTitles,
+      "Technical Guide",
+      "Programming Tutorial",
+      "Learning Resource",
+      book.category || "",
+      ...(book.prerequisites || [])
+    ].filter(Boolean),
+
+    authors: [
+      {
+        name: "IDev",
+        url: baseUrl,
+      }
+    ],
+
+    openGraph: {
+      type: "article",
+      title: fullTitle,
+      description: section.description,
+      images: [
+        {
+          url: book.icon,
+          width: 1200,
+          height: 630,
+          alt: `${section.title} - ${book.title}`,
+        }
+      ],
+      publishedTime: section.createdAt.toISOString(),
+      modifiedTime: section.updatedAt.toISOString(),
+      section: book.category || "Technology",
+      tags: [
+        ...subsectionTitles,
+        book.category || "Technology",
+        ...(book.prerequisites || [])
+      ],
+    },
+
+    twitter: {
+      card: "summary_large_image",
+      title: fullTitle,
+      description: section.description,
+      images: [book.icon],
+    },
+
+    other: {
+      "estimated-reading-time": `${totalEstimatedMinutes} minutes`,
+      "section-subsections": subsectionTitles.length.toString(),
+      "book-category": book.category || "Technology",
+    },
+
+    alternates: {
+      canonical: `${baseUrl}/books/${book.slug}/${section.slug}`,
+      languages: {
+        'en-US': `${baseUrl}/books/${book.slug}/${section.slug}`,
+      },
+    },
+  };
+}
 
 type Props = {
   params: Promise<{ slug: string; sectionSlug: string }>;

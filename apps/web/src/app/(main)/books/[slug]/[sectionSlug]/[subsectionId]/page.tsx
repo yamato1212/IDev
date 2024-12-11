@@ -9,6 +9,132 @@ import rehypeRaw from 'rehype-raw';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dracula } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
+import { Metadata } from "next";
+
+async function getSubSectionData(slug: string, sectionSlug: string, subsectionId: string) {
+  const book = await db.book.findFirst({
+    where: { slug },
+    include: {
+      bookChapters: {
+        orderBy: { order: "asc" },
+        include: {
+          bookSections: {
+            orderBy: { order: "asc" },
+            where: { slug: sectionSlug }, // Filter sections by slug
+            include: {
+              bookSubSections: {
+                orderBy: { order: "asc" }
+              }
+            }
+          }
+        }
+      }
+    }
+  });
+
+  if (!book) return { book: null, currentSubSection: null, currentChapter: null, currentSection: null };
+
+  // Find the chapter that contains the section
+  const currentChapter = book.bookChapters.find(chapter => 
+    chapter.bookSections.some(section => section.slug === sectionSlug)
+  );
+
+  if (!currentChapter) return { book, currentSubSection: null, currentChapter: null, currentSection: null };
+
+  // Find the section
+  const currentSection = currentChapter.bookSections.find(
+    section => section.slug === sectionSlug
+  );
+
+  if (!currentSection) return { book, currentSubSection: null, currentChapter, currentSection: null };
+
+  // Find the subsection
+  const currentSubSection = currentSection.bookSubSections.find(
+    subsection => subsection.id === subsectionId
+  );
+
+  return {
+    book,
+    currentSubSection,
+    currentChapter,
+    currentSection
+  };
+}
+ 
+export async function generateMetadata(
+  { params }: { params: { slug: string; sectionSlug: string; subsectionId: string } }
+): Promise<Metadata> {
+  const { book, currentSubSection, currentChapter, currentSection } = 
+  await getSubSectionData(params.slug, params.sectionSlug, params.subsectionId);
+
+  if (!book || !currentSubSection || !currentChapter || !currentSection) {
+    return {
+      title: "Content Not Found",
+      description: "The requested content could not be found.",
+    };
+  }
+
+  const baseUrl = process.env.NEXT_PUBLIC_URL
+    ? `https://${process.env.NEXT_PUBLIC_URL}`
+    : "http://localhost:3000";
+
+  const fullTitle = `${currentSubSection.title} - ${book.title}`;
+  const pageUrl = `${baseUrl}/books/${params.slug}/${params.sectionSlug}/${params.subsectionId}`;
+
+
+
+  return {
+    title: fullTitle,
+    description: currentSubSection.description,
+    
+    keywords: [
+      book.title,
+      currentChapter.title,
+      currentSection.title,
+      currentSubSection.title,
+      book.category,
+      ...(book.prerequisites || [])
+    ].filter(Boolean) as any,
+
+    openGraph: {
+      title: fullTitle,
+      description: currentSubSection.description,
+      type: "article",
+      url: pageUrl,
+      images: [
+        {
+          url: book.icon,
+          width: 1200,
+          height: 630,
+          alt: fullTitle
+        }
+      ],
+      siteName: "AI Book Hub"
+    },
+
+    twitter: {
+      card: "summary_large_image",
+      title: fullTitle,
+      description: currentSubSection.description,
+      images: [book.icon]
+    },
+
+    alternates: {
+      canonical: pageUrl
+    },
+
+    other: {
+      "reading-time": `${currentSubSection.estimatedMinutes} minutes`,
+      "book-category": book.category || "Technology",
+      "chapter": currentChapter.title,
+      "section": currentSection.title
+    },
+
+
+  };
+}
+
+
 type Props = {
   params: {
     slug: string;

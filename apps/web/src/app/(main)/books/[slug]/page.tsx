@@ -9,10 +9,141 @@ import { BookTemplate, Eye, Timer } from "lucide-react";
 import { unstable_cache } from "next/cache";
 import Image from "next/image";
 import Link from "next/link";
+import { Metadata } from "next";
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
+
+export async function generateStaticParams() {
+  const books = await db.book.findMany({
+    select: {
+      slug: true,
+    },
+  });
+
+  return books.map((book) => ({
+    slug: book.slug,
+  }));
+}
+
+async function getBookData(slug: string) {
+  const book = await db.book.findFirst({
+    where: { slug },
+    include: {
+      children: true,
+      bookBestPractices: {
+        include: {
+          bookBestPracticeItems: true
+        }
+      },
+      bookChapters: {
+        include: {
+          bookSections: {
+            orderBy: {
+              order: "asc"
+            },
+            include: {
+              bookSubSections: {
+                orderBy: {
+                  order: "asc"
+                }
+              }
+            }
+          }
+        },
+        orderBy: {
+          order: "asc"
+        }
+      },
+    },
+  });
+
+  return book;
+}
+
+// Generate metadata for book pages
+export async function generateMetadata(
+  { params }: Props
+): Promise<Metadata> {
+  const book = await getBookData((await params).slug);
+  
+  if (!book) {
+    return {
+      title: "Book Not Found | IDev",
+      description: "The requested book could not be found.",
+    };
+  }
+
+  const totalEstimatedMinutes = book.bookChapters.reduce((total, chapter) => {
+    return total + chapter.bookSections.reduce((sectionTotal, section) => {
+      return sectionTotal + (section.estimatedMinutes || 0);
+    }, 0);
+  }, 0);
+
+  const chapterTitles = book.bookChapters.map(chapter => chapter.title);
+  const bestPracticeTitles = book.bookBestPractices.map(practice => practice.title);
+
+  const baseUrl = process.env.NEXT_PUBLIC_URL
+    ? `https://${process.env.NEXT_PUBLIC_URL}`
+    : "http://localhost:3000";
+
+  return {
+    title: `${book.title} - IDev`,
+    description: book.description,
+    keywords: [
+      book.title,
+      ...chapterTitles,
+      ...bestPracticeTitles,
+      "AI Book",
+      "Technology Guide",
+      "Programming Resource",
+      book.category || "",
+      ...(book.prerequisites || []),
+    ].filter(Boolean),
+    authors: [
+      {
+        name: "IDev",
+        url: baseUrl,
+      }
+    ],
+    openGraph: {
+      type: "article",
+      title: book.title,
+      description: book.description,
+      images: [
+        {
+          url: book.icon,
+          width: 1200,
+          height: 630,
+          alt: book.title,
+        }
+      ],
+      publishedTime: book.createdAt.toISOString(),
+      modifiedTime: book.updatedAt.toISOString(),
+      section: book.category || "Technology",
+      tags: book.prerequisites,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: book.title,
+      description: book.description,
+      images: [book.icon],
+    },
+    other: {
+      "reading-time": `${totalEstimatedMinutes} minutes`,
+      "book-category": book.category || "Technology",
+      "book-prerequisites": book.prerequisites?.join(", "),
+    },
+    alternates: {
+      canonical: `${baseUrl}/books/${book.slug}`,
+      languages: {
+        'en-US': `${baseUrl}/books/${book.slug}`,
+      },
+    },
+  };
+}
+
 
 const getCachedBook = unstable_cache(
 	async (s: string) => {
