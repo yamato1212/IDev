@@ -92,8 +92,10 @@ model BookBestPractice {
 
 model BookBestPracticeItem {
  id        String  @id @default(uuid())
+
  title String?
  description String?
+   order         Int      @default(0)
  link      String? 
  imageUrl  String?
  text      String?

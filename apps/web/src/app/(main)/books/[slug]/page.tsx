@@ -1,11 +1,11 @@
 import BookChapters from "@/components/main/book/BookChapters";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 // app/books/[slug]/page.tsx
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { db } from "@/lib/prisma";
 import { cn, formatNumber } from "@/lib/utils";
 
-import { BookTemplate, Eye, Timer } from "lucide-react";
+import { ArrowRight, Book, BookTemplate, Eye, Star, Timer } from "lucide-react";
 import { unstable_cache } from "next/cache";
 import Image from "next/image";
 import Link from "next/link";
@@ -208,10 +208,10 @@ export default async function BookPage({ params }: Props) {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6 pt-20">
-      <div className="flex flex-col md:flex-row gap-8 relative min-h-[calc(100vh-theme(spacing.32))]">
+    <div className="mx-auto p-6 pt-20">
+      <div className="flex flex-col md:flex-row gap-8 relative">
         {/* 左側固定部分 */}
-        <div className="md:w-80 md:flex-shrink-0 md:sticky md:top-20 h-fit flex justify-center items-center">
+        <div className="md:w-80 md:flex-shrink-0  md:top-20 flex justify-center items-center">
           <div className="space-y-8">
             <div className="z-1 mb-2 flex relative bg-white">
               <div className={cn("w-2 rounded-md border shadow-md ")} />
@@ -234,70 +234,72 @@ export default async function BookPage({ params }: Props) {
                   />
                 </div>
               </div>
+
+              
+ 
+
             </div>
 
-            {/* <div className="flex gap-4">
-              <Button>Read start</Button>
-              <Button variant="outline">Read start</Button>
-            </div> */}
+            <div className="flex gap-4 w-full">
+              <Link href={`/books/${book.slug}/${book.bookChapters[0]?.bookSections[0]?.slug}/`} className={cn(buttonVariants(), "w-full")}>
+                Start read {book.slug} book
+              </Link>
+             
+            </div>
 
             <div className="">
-              {/* {book.category && (
-                <div className="flex flex-col gap-2">
-                  <div className="text-xs">カテゴリー</div>
-                  <div className="flex pb-4 gap-2">
-                    <div className="text-xs text-gray-400">{book.category}</div>
-                  </div>
-                </div>
-              )}
-
-              <div className="flex flex-col gap-2">
-                <div className="text-xs">前提知識</div>
-                <div className="flex pb-4 gap-2">
-                  {...Array.from({ length: 2 }).map((_, index) => (
-                    <div className="text-xs text-gray-400">基本情報</div>
-                  ))}
-                </div>
-              </div> */}
-
-              {book.documentUrl && (
-                <div className="flex flex-col gap-2">
-                  <div className="text-xs">document</div>
-                  <div className="flex pb-4 gap-2">
-                    <div className="text-xs text-gray-400">
-                      {book.documentUrl}
-                    </div>
-                  </div>
-                </div>
-              )}
+             
+             {book.bookBestPractices.length > 0 && (
+  <div className="space-y-6">
+  <div className="flex items-center gap-2">
+    <Star className="w-5 h-5 text-yellow-500" />
+    <h2 className="text-xl font-semibold">Best Practices</h2>
+  </div>
+  
+  <div className="border p-2 rounded-xl">
+    {book.bookBestPractices.map((practice) => (
+      <Link 
+        key={practice.id} 
+        href={`/books/${book.slug}/best-practice/${practice.id}`}
+      >
+     
+       
+          
+            
+        
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="font-semibold text-sm text-gray-900">
+                  {practice.title}
+                </h3>
+              
+              </div>
+              
+              <p className="mt-1 text-xs text-gray-600 line-clamp-2">
+                {practice.description}
+              </p>
+              
+             
+        
+      
+    
+    
+      </Link>
+    ))}
+  </div>
+</div>
+)}
             </div>
           </div>
+
+        
+
+
         </div>
 
        
       
 <div>
-{book.bookBestPractices.length > 0 && (
-  <div className="mt-8">
-    <h2 className="text-xl font-semibold mb-4">ベストプラクティス</h2>
-    {book.bookBestPractices.map((practice) => (
-      <div key={practice.id} className="mb-6">
-        <h3 className="text-lg font-semibold">{practice.title}</h3>
-        {practice.bookBestPracticeItems.map((item) => (
-  <div key={item.id} className="p-4 border-b">
-    <div className="text-sm font-medium">{item.title || "No Title"}</div>
-    {item.link && (
-      <div
-        dangerouslySetInnerHTML={{ __html: item.link }} // 保存されたHTMLを直接レンダリング
-      ></div>
-    )}
-  </div>
-))}
 
-      </div>
-    ))}
-  </div>
-)}
      <BookChapters book={book} slug={s}/>
 </div>
       </div>
@@ -305,7 +307,7 @@ export default async function BookPage({ params }: Props) {
       <div>
         {book.children && book.children.length > 0 && (
           <div className="mt-8">
-            <div className="text-xl font-semibold mb-4">関連コンテンツ</div>
+            <div className="text-xl font-semibold mb-4">Book</div>
             <div className="space-y-4">
               {book.children.map((child: any) => (
                 <a

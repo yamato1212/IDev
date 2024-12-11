@@ -76,12 +76,22 @@ function BookChapters({ book, slug }: BookChaptersProps) {
 
         {book.bookChapters?.length > 0 ? (
           <div className="space-y-4">
-            {book.bookChapters.map((chapter) => (
-              <div key={chapter.id} className="border rounded-lg p-4 bg-white shadow-sm">
+            {book.bookChapters.map((chapter, index) => (
+              <div key={chapter.id} className="border rounded-lg p-2 bg-white shadow-sm">
                 <div
-                  className="flex items-center cursor-pointer"
+                  className=" items-center cursor-pointer"
                   onClick={() => toggleChapter(chapter.id)}
                 >
+
+
+<div className="flex pb-4 items-center justify-between">
+
+                  <h1 className="bg-gray-50 border rounded-md px-2 text-xs md:text-sm">Chapter {index + 1}</h1>
+
+                  <p className="text-gray-400 text-xs">{chapter.bookSections.length} section</p>
+</div>
+                  <div className="flex">
+
                   {expandedChapters[chapter.id] ? (
                     <ChevronDown className="w-5 h-5 mr-2" />
                   ) : (
@@ -89,6 +99,7 @@ function BookChapters({ book, slug }: BookChaptersProps) {
                   )}
                   <div>
                     <h3 className="font-bold text-sm">{chapter.title}</h3>
+                  </div>
                   </div>
                 </div>
 
