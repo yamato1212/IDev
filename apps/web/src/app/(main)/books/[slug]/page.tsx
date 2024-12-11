@@ -22,6 +22,11 @@ const getCachedBook = unstable_cache(
       },
       include: {
         children: true,
+        bookBestPractices: {
+          include: {
+            bookBestPracticeItems: true
+          }
+        },
   
         bookChapters: {
           include: {
@@ -57,6 +62,8 @@ const getCachedBook = unstable_cache(
 export default async function BookPage({ params }: Props) {
   const s = (await params).slug;
     const book = await getCachedBook(s);
+
+
 
 
   if (!book) {
@@ -136,8 +143,32 @@ export default async function BookPage({ params }: Props) {
           </div>
         </div>
 
-        {/* 右側スクロール部分 */}
+       
+      
+<div>
+{book.bookBestPractices.length > 0 && (
+  <div className="mt-8">
+    <h2 className="text-xl font-semibold mb-4">ベストプラクティス</h2>
+    {book.bookBestPractices.map((practice) => (
+      <div key={practice.id} className="mb-6">
+        <h3 className="text-lg font-semibold">{practice.title}</h3>
+        {practice.bookBestPracticeItems.map((item) => (
+  <div key={item.id} className="p-4 border-b">
+    <div className="text-sm font-medium">{item.title || "No Title"}</div>
+    {item.link && (
+      <div
+        dangerouslySetInnerHTML={{ __html: item.link }} // 保存されたHTMLを直接レンダリング
+      ></div>
+    )}
+  </div>
+))}
+
+      </div>
+    ))}
+  </div>
+)}
      <BookChapters book={book} slug={s}/>
+</div>
       </div>
 
       <div>

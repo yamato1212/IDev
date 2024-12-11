@@ -4,21 +4,66 @@ import Link from "next/link";
 import { useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 
-function BookChapters({ book, slug }: any) {
+type SubSection = {
+  id: string;
+  title: string;
+  description: string;
+  slug: string;
+  estimatedMinutes: number;
+};
+
+type Section = {
+  id: string;
+  title: string;
+  description: string;
+  slug: string;
+  estimatedMinutes: number;
+  bookSubSections: SubSection[];
+};
+
+type Chapter = {
+  id: string;
+  title: string;
+  description: string;
+  bookSections: Section[];
+};
+
+type BookChaptersProps = {
+  book: {
+    description: string;
+    bookChapters: Chapter[];
+  };
+  slug: string;
+};
+
+function BookChapters({ book, slug }: BookChaptersProps) {
   const [expandedChapters, setExpandedChapters] = useState<{ [key: string]: boolean }>({});
-  const [expandedSections, setExpandedSections] = useState<{ [key: string]: boolean }>({});
+
+  // フラットな順序配列を作成
+  const orderedContent = book.bookChapters.flatMap(chapter => 
+    chapter.bookSections.flatMap(section => [
+      {
+        type: 'section',
+        id: section.id,
+        title: section.title,
+        description: section.description,
+        slug: section.slug
+      },
+      ...(section.bookSubSections.map(subsection => ({
+        type: 'subsection',
+        id: subsection.id,
+        title: subsection.title,
+        description: subsection.description,
+        slug: `${section.slug}/${subsection.id}`,
+        parentSectionId: section.id
+      })))
+    ])
+  );
 
   const toggleChapter = (chapterId: string) => {
-    setExpandedChapters((prev) => ({
+    setExpandedChapters(prev => ({
       ...prev,
-      [chapterId]: !prev[chapterId],
-    }));
-  };
-
-  const toggleSection = (sectionId: string) => {
-    setExpandedSections((prev) => ({
-      ...prev,
-      [sectionId]: !prev[sectionId],
+      [chapterId]: !prev[chapterId]
     }));
   };
 
@@ -31,7 +76,7 @@ function BookChapters({ book, slug }: any) {
 
         {book.bookChapters?.length > 0 ? (
           <div className="space-y-4">
-            {book.bookChapters.map((chapter: any) => (
+            {book.bookChapters.map((chapter) => (
               <div key={chapter.id} className="border rounded-lg p-4 bg-white shadow-sm">
                 <div
                   className="flex items-center cursor-pointer"
@@ -43,56 +88,60 @@ function BookChapters({ book, slug }: any) {
                     <ChevronRight className="w-5 h-5 mr-2" />
                   )}
                   <div>
-                    <h3 className="font-medium">{chapter.title}</h3>
+                    <h3 className="font-bold text-sm">{chapter.title}</h3>
                   </div>
                 </div>
 
                 {expandedChapters[chapter.id] && chapter.bookSections?.length > 0 && (
                   <div className="ml-7 mt-4 space-y-3">
-                    {chapter.bookSections.map((section: any) => (
-                      <div key={section.id}>
-                        <div
-                          className="flex items-center cursor-pointer"
-                          onClick={() => toggleSection(section.id)}
-                        >
-                          {expandedSections[section.id] ? (
-                            <ChevronDown className="w-5 h-5 mr-2" />
-                          ) : (
-                            <ChevronRight className="w-5 h-5 mr-2" />
-                          )}
-                          <div className="flex justify-between w-full items-center">
+                    {chapter.bookSections.map((section) => {
+                      const sectionIndex = orderedContent.findIndex(
+                        content => content.type === 'section' && content.id === section.id
+                      );
+                      
+                      return (
+                        <div key={section.id} className="space-y-2">
+                          <Link
+                            href={`/books/${slug}/${section.slug}`}
+                            className="flex items-center justify-between hover:bg-gray-50"
+                          >
                             <div>
-                              <h4 className="font-medium">{section.title}</h4>
-                              <p className="text-sm text-gray-600">{section.description}</p>
+                              <h4 className="font-medium text-sm line-clamp-1">{section.title}</h4>
+                              <p className="text-xs md:text-sm text-gray-600 line-clamp-2">{section.description}</p>
+                            
                             </div>
-                          </div>
-                        </div>
+                          
+                          </Link>
 
-                        {expandedSections[section.id] && section.bookSubSections?.length > 0 && (
-                          <div className="ml-6 mt-3">
-                            {section.bookSubSections.map((sub: any) => (
-                              <div
-                                key={sub.id}
-                                className="border-l-2 border-gray-200 pl-4 py-2"
-                              >
-                                <h5 className="font-medium text-sm">{sub.title}</h5>
-                                <p className="text-sm text-gray-600">{sub.description}</p>
-                                <span className="text-xs text-gray-500">
-                                  予想読了時間: {sub.estimatedMinutes}分
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    ))}
+                          {section.bookSubSections?.length > 0 && (
+                            <div className="ml-2 space-y-2">
+                              {section.bookSubSections.map((subsection, subIndex) => (
+                                <div 
+                                  key={subsection.id}
+                                  className="border-l-2 border-gray-200 "
+                                >
+                                  <Link
+                                    href={`/books/${slug}/${section.slug}/${subsection.id}`}
+                                    className="block hover:bg-gray-50 rounded p-2"
+                                  >
+                                    <h5 className="font-medium text-sm line-clamp-1">{subsection.title}</h5>
+                                    <p className="text-xs text-gray-600 line-clamp-2">{subsection.description}</p>
+                                    
+                                  </Link>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>
             ))}
           </div>
         ) : (
-          <div className="text-center text-gray-600 dark:text-gray-400">
+          <div className="text-center text-gray-600">
             チャプターがありません。
           </div>
         )}

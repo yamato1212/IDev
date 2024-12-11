@@ -86,7 +86,7 @@ Adjust chapters, sections, and subsections to fit the provided topic while maint
       max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.7,
-    });
+    }) as any;
 
     const content = response.content[0].text;
     
@@ -274,6 +274,112 @@ OUTPUT IN MARKDOWN FORMAT ONLY.`;
       chapterTitle,
       sectionTitle,
       sectionDescription
+    });
+    throw error;
+  }
+}
+
+
+export async function generateSubSectionContent(
+  bookTitle: string,
+  chapterTitle: string,
+  sectionTitle: string,
+  subsectionTitle: string,
+  subsectionDescription: string
+) {
+  const functionName = 'generateSubSectionContent';
+  try {
+    logDebug(functionName, 'Starting generation with:', {
+      bookTitle,
+      chapterTitle,
+      sectionTitle,
+      subsectionTitle,
+      subsectionDescription
+    });
+
+    const prompt = `You are writing content for the technical book "${bookTitle}". 
+Create a comprehensive, SEO-optimized article in React-Markdown compatible format.
+
+Target Content:
+Chapter: ${chapterTitle}
+Section: ${sectionTitle}
+SubSection: ${subsectionTitle}
+Description: ${subsectionDescription}
+
+Required Structure:
+
+# ${subsectionTitle}
+
+> A comprehensive guide to ${subsectionTitle} in ${bookTitle}. Learn about [main concept] with clear explanations. Perfect for beginners starting with ${bookTitle}.
+
+## Introduction
+[Hook and value proposition explaining why this topic matters]
+[Clear explanation of what readers will learn]
+
+## Core Concepts
+[Main concept explanations with examples]
+
+## Implementation Details
+[Step-by-step implementation guide]
+
+## Best Practices
+[Key best practices and recommendations]
+
+## Common Pitfalls
+[Common mistakes to avoid]
+
+## Practical Examples
+[Real-world examples with explanations]
+
+## Summary and Next Steps
+[Key takeaways and what to learn next]
+
+Content Requirements:
+1. Format:
+   - Use proper markdown heading hierarchy (h1 > h2)
+   - Create clear paragraph breaks
+   - Use bullet points for lists
+   - Include code blocks where relevant
+   - Length: ~3000 characters
+
+2. Style:
+   - Write in clear, beginner-friendly language
+   - Define all technical terms
+   - Use practical examples
+   - Include code samples where appropriate
+
+3. SEO Elements:
+   - Use descriptive headers
+   - Include relevant keywords naturally
+   - Write engaging meta description
+   - Create scannable content structure
+
+IMPORTANT: Output clean Markdown that works well with react-markdown. No table of contents or extra formatting - focus on content that renders well in the UI.
+
+OUTPUT IN MARKDOWN FORMAT ONLY.`;
+
+    logDebug(functionName, 'Sending prompt to Claude');
+
+    const response = await client.messages.create({
+      model: 'claude-3-opus-20240229',
+      max_tokens: 4000,
+      messages: [{ role: 'user', content: prompt }],
+    }) as any;
+
+    logDebug(functionName, 'Received response from Claude');
+    
+    const content = response.content[0].text;
+    logDebug(functionName, 'Response content length:', content.length);
+
+    return content;
+
+  } catch (error) {
+    logError(functionName, error, {
+      bookTitle,
+      chapterTitle,
+      sectionTitle,
+      subsectionTitle,
+      subsectionDescription
     });
     throw error;
   }
