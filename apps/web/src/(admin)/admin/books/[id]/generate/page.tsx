@@ -198,9 +198,15 @@ export default function GenerateBookContent({ params }: { params: { id: string }
         {chapters.map((chapter) => (
           <div key={chapter.id} className="border rounded-lg p-4">
             <div className="flex justify-between items-center">
-              <div>
-                <h3 className="font-medium">{chapter.title}</h3>
-                <p className="text-sm text-gray-600">{chapter.description}</p>
+              <div className="flex items-center space-x-2 cursor-pointer" onClick={() => toggleChapter(chapter.id)}>
+                {expandedChapters[chapter.id] ? 
+                  <ChevronDown className="w-5 h-5" /> : 
+                  <ChevronRight className="w-5 h-5" />
+                }
+                <div>
+                  <h3 className="font-medium">{chapter.title}</h3>
+                  <p className="text-sm text-gray-600">{chapter.description}</p>
+                </div>
               </div>
               <Button
                 onClick={() => {
@@ -213,14 +219,20 @@ export default function GenerateBookContent({ params }: { params: { id: string }
             </div>
 
             {/* セクション一覧 */}
-            {chapter.bookSections?.length > 0 && (
+            {expandedChapters[chapter.id] && chapter.bookSections?.length > 0 && (
               <div className="ml-8 mt-4 space-y-4">
                 {chapter.bookSections.map((section) => (
                   <div key={section.id} className="border-l-2 pl-4">
                     <div className="flex justify-between items-center">
-                      <div>
-                        <h4 className="font-medium">{section.title}</h4>
-                        <p className="text-sm text-gray-600">{section.description}</p>
+                      <div className="flex items-center space-x-2 cursor-pointer" onClick={() => toggleSection(section.id)}>
+                        {expandedSections[section.id] ? 
+                          <ChevronDown className="w-5 h-5" /> : 
+                          <ChevronRight className="w-5 h-5" />
+                        }
+                        <div>
+                          <h4 className="font-medium">{section.title}</h4>
+                          <p className="text-sm text-gray-600">{section.description}</p>
+                        </div>
                       </div>
                       <Button
                         onClick={() => {
@@ -234,40 +246,40 @@ export default function GenerateBookContent({ params }: { params: { id: string }
                     </div>
                     
                     {/* サブセクション一覧 */}
-                    {section.bookSubSections?.length > 0 && (
-  <div className="ml-8 mt-4 space-y-2">
-    {section.bookSubSections.map((subsection) => (
-      <div key={subsection.id} className="border-l-2 pl-4 py-2">
-        <div className="flex justify-between items-center">
-          <div>
-            <h5 className="font-medium text-sm">{subsection.title}</h5>
-            <p className="text-sm text-gray-600">{subsection.description}</p>
-            <span className="text-xs text-gray-500">
-              予想読了時間: {subsection.estimatedMinutes}分
-            </span>
-          </div>
-          <Button
-            onClick={() => handleGenerateSubSectionContent(subsection.id)}
-            disabled={generatingContent[subsection.id]}
-            variant="outline"
-            size="sm"
-          >
-            {generatingContent[subsection.id] ? (
-              <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> 生成中</>
-            ) : (
-              subsection.aiContent ? 'コンテンツを再生成' : 'コンテンツを生成'
-            )}
-          </Button>
-        </div>
-        {subsection.aiContent && (
-          <div className="mt-2 p-2 bg-gray-50 rounded">
-           true
-          </div>
-        )}
-      </div>
-    ))}
-  </div>
-)}
+                    {expandedSections[section.id] && section.bookSubSections?.length > 0 && (
+                      <div className="ml-8 mt-4 space-y-2">
+                        {section.bookSubSections.map((subsection) => (
+                          <div key={subsection.id} className="border-l-2 pl-4 py-2">
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <h5 className="font-medium text-sm">{subsection.title}</h5>
+                                <p className="text-sm text-gray-600">{subsection.description}</p>
+                                <span className="text-xs text-gray-500">
+                                  予想読了時間: {subsection.estimatedMinutes}分
+                                </span>
+                              </div>
+                              <Button
+                                onClick={() => handleGenerateSubSectionContent(subsection.id)}
+                                disabled={generatingContent[subsection.id]}
+                                variant="outline"
+                                size="sm"
+                              >
+                                {generatingContent[subsection.id] ? (
+                                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> 生成中</>
+                                ) : (
+                                  subsection.aiContent ? 'コンテンツを再生成' : 'コンテンツを生成'
+                                )}
+                              </Button>
+                            </div>
+                            {subsection.aiContent && (
+                              <div className="mt-2 p-2 bg-gray-50 rounded">
+                                true
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
