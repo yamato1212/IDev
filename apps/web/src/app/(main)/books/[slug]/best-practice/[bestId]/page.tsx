@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 type Props = {
   params: {
     slug: string;
-    practiceId: string;
+    bestId: string;
   };
 };
 
@@ -17,7 +17,7 @@ type Props = {
 export default async function BestPracticePage({ params }: Props) {
   const practice = await db.bookBestPractice.findFirst({
     where: {
-      id: params.practiceId,
+      id: params.bestId,
     },
     include: {
       bookBestPracticeItems: true
