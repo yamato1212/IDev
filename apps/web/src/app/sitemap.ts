@@ -1,3 +1,4 @@
+// app/sitemap.ts
 import { db } from "@/lib/prisma";
 import type { MetadataRoute } from "next";
 
@@ -21,15 +22,13 @@ async function getBookRoutes(): Promise<Route[]> {
       updatedAt: true,
       bookChapters: {
         select: {
-          slug: true,
-          updatedAt: true,
           bookSections: {
             select: {
               slug: true,
               updatedAt: true,
               bookSubSections: {
                 select: {
-                  slug: true,
+                  id: true,
                   updatedAt: true,
                 }
               }
@@ -51,19 +50,12 @@ async function getBookRoutes(): Promise<Route[]> {
       priority: 1.0
     });
 
-    // Chapter routes
+    // Section and Subsection routes
     book.bookChapters.forEach((chapter) => {
-      routes.push({
-        url: `${baseUrl}/books/${book.slug}/chapters/${chapter.slug}`,
-        lastModified: chapter.updatedAt.toISOString(),
-        changefreq: "weekly",
-        priority: 0.9
-      });
-
-      // Section routes
       chapter.bookSections.forEach((section) => {
+        // Section route
         routes.push({
-          url: `${baseUrl}/books/${book.slug}/chapters/${chapter.slug}/sections/${section.slug}`,
+          url: `${baseUrl}/books/${book.slug}/${section.slug}`,
           lastModified: section.updatedAt.toISOString(),
           changefreq: "weekly",
           priority: 0.8
@@ -72,7 +64,7 @@ async function getBookRoutes(): Promise<Route[]> {
         // SubSection routes
         section.bookSubSections.forEach((subsection) => {
           routes.push({
-            url: `${baseUrl}/books/${book.slug}/chapters/${chapter.slug}/sections/${section.slug}/subsections/${subsection.slug}`,
+            url: `${baseUrl}/books/${book.slug}/${section.slug}/${subsection.id}`,
             lastModified: subsection.updatedAt.toISOString(),
             changefreq: "weekly",
             priority: 0.7
@@ -85,11 +77,7 @@ async function getBookRoutes(): Promise<Route[]> {
   return routes;
 }
 
-
-
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // Static routes
   const staticRoutes: Route[] = [
     {
       url: baseUrl,
@@ -102,22 +90,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date().toISOString(),
       changefreq: "daily",
       priority: 0.9
-    },
-    {
-      url: `${baseUrl}/categories`,
-      lastModified: new Date().toISOString(),
-      changefreq: "weekly",
-      priority: 0.8
     }
   ];
 
   try {
-    // Fetch dynamic routes
-    const [bookRoutes, ] = await Promise.all([
-      getBookRoutes(),
-     
-    ]);
-
+    const bookRoutes = await getBookRoutes();
     return [...staticRoutes, ...bookRoutes];
   } catch (error) {
     console.error("Error generating sitemap:", error);

@@ -91,15 +91,8 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  verification: {
-    google: "your-google-site-verification", // Add your Google verification code
-  },
   alternates: {
     canonical: siteConfig.url,
-    languages: {
-      'ja-JP': '/jp',
-      'en-US': '/en',
-    },
   }
 };
 export default async function RootLayout({
