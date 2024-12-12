@@ -1,50 +1,12 @@
-// app/api/books/generate/subsection-content/route.ts
 import { db } from "@/lib/prisma";
 import { generateSubSectionContent } from "@/lib/claude";
 
-function logDebug(message: string, data?: any) {
-  console.log(`[/api/books/generate/subsection-content] ${message}`, data ? data : '');
+async function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function logError(error: any, context?: any) {
-  console.error(`[/api/books/generate/subsection-content] Error:`, error);
-  if (context) {
-    console.error(`[/api/books/generate/subsection-content] Context:`, context);
-  }
-}
-
-export async function POST(req: Request) {
+async function generateContentForSubSection(subsection: any) {
   try {
-    logDebug('Starting subsection content generation');
-
-    const { bookId, subsectionId } = await req.json();
-    logDebug('Received request with:', { bookId, subsectionId });
-
-    if (!bookId || !subsectionId) {
-      logDebug('Missing required parameters');
-      return Response.json({ error: "Book ID and SubSection ID are required" }, { status: 400 });
-    }
-
-    // サブセクションとその関連データを取得
-    const subsection = await db.bookSubSection.findUnique({
-      where: { id: subsectionId },
-      include: {
-        BookSection: {
-          include: {
-            bookChapter: true,
-            book: true
-          }
-        }
-      }
-    });
-
-    if (!subsection) {
-      logDebug('SubSection not found');
-      return Response.json({ error: "SubSection not found" }, { status: 404 });
-    }
-
-    // コンテンツを生成
-    logDebug('Generating content for subsection:', subsection.title);
     const content = await generateSubSectionContent(
       subsection.BookSection.book.title,
       subsection.BookSection.bookChapter.title,
@@ -53,24 +15,71 @@ export async function POST(req: Request) {
       subsection.description
     );
 
-    // 生成したコンテンツを保存
-    const updatedSubSection = await db.bookSubSection.update({
-      where: { id: subsectionId },
+    await db.bookSubSection.update({
+      where: { id: subsection.id },
       data: { aiContent: content }
     });
 
-    logDebug('Successfully generated and saved content for subsection:', subsection.title);
+    console.log(`✅ Generated content for "${subsection.title}"`);
+    return true;
+  } catch (error) {
+    console.error(`❌ Failed to generate content for "${subsection.title}":`, error);
+    return false;
+  }
+}
+
+export async function POST(req: Request) {
+  try {
+    const { bookId } = await req.json();
+
+    // すべてのサブセクションを取得（aiContentがnullのもののみ）
+    const subsections = await db.bookSubSection.findMany({
+      where: {
+        BookSection: {
+          bookId: bookId
+        },
+        aiContent: null
+      },
+      include: {
+        BookSection: {
+          include: {
+            bookChapter: true,
+            book: true
+          }
+        }
+      },
+      orderBy: [
+        { 'BookSection': { bookChapter: { order: 'asc' } } },
+        { 'BookSection': { order: 'asc' } },
+        { order: 'asc' }
+      ]
+    });
+
+    if (subsections.length === 0) {
+      return Response.json({
+        message: "No subsections found that need content generation"
+      });
+    }
+
+    // 最初のサブセクションのみ処理
+    const subsection = subsections[0];
+    const success = await generateContentForSubSection(subsection);
+
+    const remainingCount = subsections.length - 1;
 
     return Response.json({
-      success: true,
-      subsection: updatedSubSection,
-      message: `Generated content for "${subsection.title}"`
+      success: success,
+      message: success 
+        ? `Successfully generated content for "${subsection?.title}". ${remainingCount} subsections remaining.`
+        : `Failed to generate content for "${subsection?.title}"`,
+      remainingCount,
+      nextSubSection: remainingCount > 0 ? subsections[1]?.title : null
     });
 
   } catch (error) {
-    logError(error, { path: '/api/books/generate/subsection-content' });
+    console.error("Failed to process content generation:", error);
     return Response.json({
-      error: "Failed to generate content",
+      error: "Failed to process content generation",
       details: error instanceof Error ? error.message : String(error)
     }, { status: 500 });
   }

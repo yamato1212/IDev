@@ -7,7 +7,8 @@
     "build": "pnpm dlx prisma generate && next build",
     "start": "next start",
     "fmt": "pnpm biome format ./src --write && pnpm biome check ./src --apply ",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "seed:chapter5": "tsx scripts/book-chapter.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.1",
@@ -71,6 +72,7 @@
     "slugify": "^1.6.6",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
+    "uuid": "^11.0.3",
     "uuidv4": "^6.2.13",
     "vaul": "^0.9.0",
     "zod": "^3.22.4",
@@ -94,6 +96,7 @@
     "postcss-import": "^16.0.1",
     "prisma": "^5.22.0",
     "tailwindcss": "^3.4.0",
+    "tsx": "^4.7.0",
     "typescript": "^5.3.3"
   }
 }

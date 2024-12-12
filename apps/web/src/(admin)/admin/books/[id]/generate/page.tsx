@@ -62,6 +62,7 @@ export default function GenerateBookContent({ params }: { params: { id: string }
   const [expandedChapters, setExpandedChapters] = useState<{[key: string]: boolean}>({});
   const [expandedSections, setExpandedSections] = useState<{[key: string]: boolean}>({});
   const [generatingContent, setGeneratingContent] = useState<{[key: string]: boolean}>({});
+const [remainingCount, setRemainingCount] = useState(0);
 
 
   const fetchChapters = async () => {
@@ -113,6 +114,42 @@ export default function GenerateBookContent({ params }: { params: { id: string }
       setStatus('サブセクションのコンテンツ生成中にエラーが発生しました');
     } finally {
       setGeneratingContent(prev => ({ ...prev, [subsectionId]: false }));
+    }
+  };
+
+  const handleGenerateNextContent = async () => {
+    if (isGenerating) return;
+  
+    try {
+      setIsGenerating(true);
+      const response = await fetch('/api/books/generate/content', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bookId: params.id }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to generate content');
+      }
+  
+      const data = await response.json();
+      setStatus(data.message);
+      setRemainingCount(data.remainingCount);
+  
+      // コンテンツが生成されたら、チャプター一覧を更新
+      await fetchChapters();
+  
+      // 残りのサブセクションがある場合、少し待ってから次のコンテンツを生成
+      if (data.remainingCount > 0) {
+        await new Promise(resolve => setTimeout(resolve, 5000)); // 5秒待機
+        handleGenerateNextContent();
+      }
+  
+    } catch (error) {
+      console.error('Content generation failed:', error);
+      setStatus('コンテンツ生成中にエラーが発生しました');
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -192,6 +229,22 @@ export default function GenerateBookContent({ params }: { params: { id: string }
           チャプターを追加
         </Button>
       </div>
+
+      <Button
+  onClick={handleGenerateNextContent}
+  disabled={isGenerating}
+>
+  {isGenerating ? (
+    <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> 生成中</>
+  ) : (
+    '未生成のコンテンツを生成'
+  )}
+</Button>
+{remainingCount > 0 && (
+  <p className="text-sm text-gray-600">
+    残り{remainingCount}個のサブセクション
+  </p>
+)}
 
       {/* チャプター一覧 */}
       <div className="space-y-4">

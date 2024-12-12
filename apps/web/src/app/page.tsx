@@ -184,7 +184,7 @@ export default async function Home() {
                       {book.title}
                     </div>
 
-                    <div className="text-xs text-gray-400 line-clamp-4 pt-2 dark:text-white">
+                    <div className="text-xs text-gray-400 line-clamp-3 pt-2 dark:text-white">
                       {book.description}
                     </div>
 

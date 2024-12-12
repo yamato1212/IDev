@@ -211,7 +211,7 @@ export default async function BookPage({ params }: Props) {
     <div className="mx-auto p-6 pt-20">
       <div className="flex flex-col md:flex-row gap-8 relative">
         {/* 左側固定部分 */}
-        <div className="md:w-80 md:flex-shrink-0  md:top-20 flex justify-center items-center">
+        <div className="md:w-80 md:flex-shrink-0  md:top-20 flex justify-center">
           <div className="space-y-8">
             <div className="z-1 mb-2 flex relative bg-white">
               <div className={cn("w-2 rounded-md border shadow-md ")} />
