@@ -19,7 +19,7 @@ import { Metadata } from "next";
 const inter = Inter({ subsets: ["latin"] });
 
 const siteConfig = {
-  name: "AI Book Platform",
+  name: "IDev",
   url: "https://casiry.com",
   description: "Explore the world of AI-generated technology books and resources. Discover innovative insights and expand your knowledge with our curated collection of AI-powered content.",
   ogImage: "/og-image.jpg", // Update with your actual OG image path

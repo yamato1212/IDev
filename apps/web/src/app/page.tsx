@@ -18,55 +18,58 @@ import Link from "next/link";
 
 import { Metadata } from "next";
 
+
 const siteConfig = {
   name: "IDev",
   url: "https://casiry.com",
-  description: "Explore the world of AI-generated technology and books. Discover a variety of books and articles that harness the power of AI to generate unique insights into technology.",
+  description: "Explore our comprehensive collection of AI-generated technology books and resources for developers worldwide.",
   ogImage: "/og-image.jpg",
 };
 
 export const metadata: Metadata = {
-  title: "AI Book Hub - Explore AI-Generated Technology Books",
-  description: "Discover a curated collection of AI-generated technology books and articles. Browse our best books and programming language resources to expand your tech knowledge.",
+  metadataBase: new URL(siteConfig.url),
+  title:  "Developer Resources & Technology Books",
+  
+  description: "Discover comprehensive AI-generated technology books and programming resources. Learn development skills with our curated collection of technical guides.",
   keywords: [
-    "AI Books",
-    "Technology Books",
+    "Developer Resources",
+    "Programming Books",
+    "Technology Guides",
+    "Coding Tutorials",
+    "Software Development",
+    "Technical Documentation",
     "Programming Languages",
-    "AI-Generated Content",
-    "Technical Books",
-    "Programming Resources",
-    "Technology Learning",
-    "AI Education",
-    "Digital Books",
-    "Tech Resources"
+    "Developer Tools",
+    "Tech Education",
+    "Software Engineering Resources"
   ],
   openGraph: {
     type: "website",
-    locale: "ja_JP",
+    locale: "en_US",
     url: siteConfig.url,
-    title: "AI Book Hub - AI-Generated Technology Books Collection",
-    description: "Explore our curated collection of AI-generated technology books. Find programming language resources and tech insights to enhance your knowledge.",
+    title: "Professional Developer Resources",
+    description: "Access comprehensive programming guides and technical resources. Perfect for developers seeking to enhance their skills.",
     siteName: siteConfig.name,
     images: [
       {
         url: siteConfig.ogImage,
         width: 1200,
         height: 630,
-        alt: "AI Book Hub - Featured Books Collection",
+        alt: "AI Book Hub - Developer Resources",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "AI Book Hub - Tech Book Collection",
-    description: "Discover AI-generated technology books and programming resources. Explore our curated collection of tech insights.",
+    title: "AI Book Hub - Developer Resources",
+    description: "Professional programming guides and technical resources for developers worldwide.",
     images: [siteConfig.ogImage],
+    creator: "@idev",
   },
   alternates: {
     canonical: siteConfig.url,
     languages: {
-      'ja-JP': '/',
-      'en-US': '/en',
+      'en': '/',
     },
   },
   robots: {
@@ -75,15 +78,33 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
+      'max-video-preview': -1,
       'max-image-preview': 'large',
       'max-snippet': -1,
     },
   },
   category: "Technology",
+
+
+
+
+
+
+
 };
 
+// データ取得を静的に行うように修正
+async function getBooks() {
+  const books = await db.book.findMany({
+
+    orderBy: {
+      createdAt: 'desc'
+    }
+  });
+  return books;
+}
 export default async function Home() {
-  const books = await db.book.findMany();
+  const books = await getBooks();
 
   return (
     <div className="pt-20">
