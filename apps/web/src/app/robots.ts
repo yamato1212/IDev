@@ -1,16 +1,18 @@
 // app/robots.ts
 import { MetadataRoute } from 'next';
 
-const baseUrl = process.env.NEXT_PUBLIC_URL
-  ? `https://${process.env.NEXT_PUBLIC_URL}`
-  : "http://localhost:3000";
+// 単純に直接URLを指定
+const baseUrl = 'https://casiry.com';
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: {
-      userAgent: '*',
-      allow: ['/'],
-    },
+    rules: [
+      {
+        userAgent: '*',
+        allow: '/',
+        disallow: ['/api/', '/admin/'],
+      },
+    ],
     sitemap: `${baseUrl}/sitemap.xml`,
     host: baseUrl,
   };
