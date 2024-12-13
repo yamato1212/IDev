@@ -109,7 +109,7 @@ export async function generateMetadata(
           alt: fullTitle
         }
       ],
-      siteName: "AI Book Hub"
+      siteName: "IDev"
     },
 
     twitter: {

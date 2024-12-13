@@ -103,7 +103,7 @@ export default async function RootLayout({
   
 }) {
   return (
-    <html lang="jp" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <Suspense>
           <GoogleAnalytics />
