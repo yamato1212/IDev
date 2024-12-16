@@ -29,9 +29,9 @@ const siteConfig = {
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title:  "Developer Resources & Technology Books",
-  
   description: "Discover comprehensive AI-generated technology books and programming resources. Learn development skills with our curated collection of technical guides.",
   keywords: [
+    "IDev",
     "Developer Resources",
     "Programming Books",
     "Technology Guides",
@@ -47,21 +47,21 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: siteConfig.url,
-    title: "Professional Developer Resources",
-    description: "Access comprehensive programming guides and technical resources. Perfect for developers seeking to enhance their skills.",
+    title: "IDev - Professional Developer Resources",
+    description: "Access comprehensive programming guides and technical resources at IDev. Perfect for developers seeking to enhance their skills.",
     siteName: siteConfig.name,
     images: [
       {
         url: siteConfig.ogImage,
         width: 1200,
         height: 630,
-        alt: "AI Book Hub - Developer Resources",
+        alt: "IDev - Developer Resources",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "AI Book Hub - Developer Resources",
+    title: "IDev - Developer Resources",
     description: "Professional programming guides and technical resources for developers worldwide.",
     images: [siteConfig.ogImage],
     creator: "@idev",

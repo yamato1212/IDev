@@ -4,35 +4,33 @@ import React from "react";
 function PrivacyPolicyPage() {
   return (
     <div className="">
-      <h1 className="text-2xl font-bold">プライバシーポリシー</h1>
+      <h1 className="text-2xl font-bold">Privacy Policy</h1>
 
-      <h2 className="mt-6 text-2xl font-medium">第1条（個人情報）</h2>
+      <h2 className="mt-6 text-2xl font-medium">Article 1 (Personal Information)</h2>
       <p className="mt-2">
-        「個人情報」とは、個人情報保護法にいう「個人情報」を指し、生存する個人に関する情報であって、当該情報に含まれる氏名、生年月日、住所、電話番号、連絡先その他の記述等により特定の個人を識別できる情報及び容貌、指紋、声紋にかかるデータ、及び健康保険証の保険者番号などの当該情報単体から特定の個人を識別できる情報（個人識別情報）を指します。
+        "Personal Information" refers to "personal information" as defined in the Personal Information Protection Act, which means information about a living individual that can identify a specific individual by name, date of birth, address, phone number, contact information, or other descriptions, as well as data related to appearance, fingerprints, voice prints, and information that can identify a specific individual from that information alone (personal identification information), such as health insurance card numbers.
       </p>
 
-      <h2 className="mt-6 text-2xl font-medium">第2条（個人情報の収集方法）</h2>
+      <h2 className="mt-6 text-2xl font-medium">Article 2 (Collection of Personal Information)</h2>
       <p className="mt-2">
-        当サイトは、ユーザーが利用登録をする際に氏名、生年月日、住所、電話番号、メールアドレス、銀行口座番号、クレジットカード番号、運転免許証番号などの個人情報をお尋ねすることがあります。また、ユーザーと提携先などとの間でなされたユーザーの個人情報を含む取引記録や決済に関する情報を、当サイトの提携先（情報提供元、広告主、広告配信先などを含みます。以下、「提携先」といいます。）などから収集することがあります。
+        When users register for our services, we may ask for personal information such as name, date of birth, address, phone number, email address, bank account number, credit card number, and driver's license number. We may also collect transaction records containing users' personal information and payment-related information between users and our business partners (including information providers, advertisers, advertising distributors, hereinafter referred to as "Business Partners").
       </p>
 
       <h2 className="mt-6 text-2xl font-medium">
-        第3条（当サイトの提携先に関する事項）
+        Article 3 (Matters Concerning Business Partners)
       </h2>
-      <h3 className="mt-4 text-lg font-medium">1．広告の配信について</h3>
+      <h3 className="mt-4 text-lg font-medium">1. About Advertising Distribution</h3>
       <p className="mt-2 flex-wrap">
-        当サイトは第三者配信の広告サービス「Google Adsense
-        グーグルアドセンス」を利用しています。広告配信事業者は、ユーザーの興味に応じた広告を表示するためにCookie（クッキー）を使用することがあります。Cookie（クッキー）を無効にする設定およびGoogleアドセンスに関する詳細は「
-        <span>https://support.google.com/adspolicy</span>
-        をご覧ください。
-        また、当サイトは、Amazon.co.jpを宣伝しリンクすることによってサイトが紹介料を獲得できる手段を提供することを目的に設定されたアフィリエイトプログラムである、Amazonアソシエイト・プログラムの参加者です。第三者がコンテンツおよび宣伝を提供し、訪問者から直接情報を収集し、訪問者のブラウザにCookie（クッキー）を設定したりこれを認識したりする場合があります。
+        This website uses "Google AdSense," a third-party advertising service. Advertising providers may use cookies to display ads based on users' interests. For cookie settings and details about Google AdSense, please visit 
+        <span>https://support.google.com/adspolicy</span>. 
+        Additionally, this website participates in the Amazon Associates Program, an affiliate program designed to provide a means for sites to earn referral fees by advertising and linking to Amazon.co.jp. Third parties may provide content and advertisements, collect information directly from visitors, and place or recognize cookies in visitors' browsers.
       </p>
 
       <h3 className="mt-4 text-lg font-medium">
-        2．アクセス解析ツールについて
+        2. About Analytics Tools
       </h3>
       <p className="mt-2">
-        当サイトでは、Googleによるアクセス解析ツール「Googleアナリティクス」を利用しています。このGoogleアナリティクスはトラフィックデータの収集のためにCookieを使用しています。このトラフィックデータは匿名で収集されており、個人を特定するものではありません。この機能はCookieを無効にすることで収集を拒否することが出来ますので、お使いのブラウザの設定をご確認ください。この規約に関して、詳しくはこちらをクリックしてください。[https://support.google.com/]
+        This website uses "Google Analytics," an access analysis tool provided by Google. Google Analytics uses cookies to collect traffic data. This traffic data is collected anonymously and does not identify individuals. You can decline this data collection by disabling cookies in your browser settings. For more information about these terms, please click here [https://support.google.com/].
       </p>
     </div>
   );

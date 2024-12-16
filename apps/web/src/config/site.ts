@@ -1,5 +1,5 @@
 export const siteConfig = {
-  name: "Casiry",
+  name: "IDev",
   url: "https://casiry.com",
   ogImage: "../../public/casy.svg",
   description:
